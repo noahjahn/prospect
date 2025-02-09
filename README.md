@@ -75,7 +75,7 @@ to successfully communicate with the local server. Do the following:
 
 1. Save and close the file.
 
-### 6. Create a game shortcut with
+### 6. Create a game shortcut with specified arguments
 
 1. Open the folder with The Cycle: Frontier and navigate to **Prospect** > **Binaries** > **Win64**.
 
