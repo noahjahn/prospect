@@ -27,7 +27,7 @@ Before you start, you'll need the following software downloaded and installed:
 
    1. Season 2 client downloaded from SteamDB using a depot downloader. For example, [version 2.7.2](https://steamdb.info/depot/868271/history/?changeid=M:4623363103423775682).
 
-### 1. Unpack `Prospect.Server.Api`
+### 2. Unpack `Prospect.Server.Api`
 
 Use your favorite ZIP archiver and unzip the `Prospect.Server.Api.zip` downloaded from this repository.
 
