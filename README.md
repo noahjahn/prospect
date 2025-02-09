@@ -9,39 +9,39 @@ Also known as "The Cycle: Frontier".
 * [x] Tutorial.
 * [x] Single-player station (Season 2 and Season 3).
 * Basic station functionality:
-  * [] Onboarding
+  * [ ] Onboarding
     * [x] Talk to Badum
     * [x] Equip items
-    * [] Deploy to Fortuna
-  * [] Matchmaking
-    * [] Can deploy through matchmaking
-    * [] Items insurance
-    * [] Free loadouts (Season 3)
-  * [] Inventory and loadout
+    * [ ] Deploy to Fortuna
+  * [ ] Matchmaking
+    * [ ] Can deploy through matchmaking
+    * [ ] Items insurance
+    * [ ] Free loadouts (Season 3)
+  * [ ] Inventory and loadout
     * [x] Items can be equipped
     * [x] Items can be unequipped.
     * [x] Loadout is carried into matchmaking
-    * [] Items are automatically stacked
-  * [] Quests
+    * [ ] Items are automatically stacked
+  * [ ] Quests
     * [x] Quests can be accepted
-    * [] Quests can be removed
-    * [] Quest progress is tracked
-    * [] Quests can be completed
-    * [] Job boards
-  * [] Faction progression
-  * [] Season pass
+    * [ ] Quests can be removed
+    * [ ] Quest progress is tracked
+    * [ ] Quests can be completed
+    * [ ] Job boards
+  * [ ] Faction progression
+  * [ ] Season pass
   * [x] Character appearance and emotes
-  * [] Shops
+  * [ ] Shops
     * [x] Items can be bought
-    * [] Items can be sold
-  * [] Season pass
-  * [] Quarters
-    * [] Generator
-    * [] Quarter upgrades
-  * [] Player balance
+    * [ ] Items can be sold
+  * [ ] Season pass
+  * [ ] Quarters
+    * [ ] Generator
+    * [ ] Quarter upgrades
+  * [ ] Player balance
     * [x] K-Marks
     * [x] Aurum
-    * [] Insurance Tokens
+    * [ ] Insurance Tokens
 
 ## Running locally
 
