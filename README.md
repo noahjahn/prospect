@@ -93,7 +93,7 @@ Now you are all set! Open the folder with `Prospect.Server.Api` and run `Prospec
 
 ### 8. Run the game
 
-Once the server is running, open The Cycle: Frontier using the shortcut you've created before.
+Once the server is running, make sure that Steam is running and open The Cycle: Frontier using the shortcut you've created before.
 
 ### Troubleshooting and FAQ
 
