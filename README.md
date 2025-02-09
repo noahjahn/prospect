@@ -114,6 +114,10 @@ If you've installed the certificate for the **Local Machine**, repeat the same s
 `generate_ssl.exe` is a Python application packed with PyInstaller and some anti-viruses may flag it as a virus.
 This application is a simple certificate generator and you can find its source code in `utils/generate_ssl.py`.
 
+#### Body parts are missing with Season 3 client
+
+Currently, the server loads body part IDs for Season 2 by default, so this is expected. You can fix this by going to station and changing your character appearance. This will store the updated body part IDs for your character.
+
 ## Development
 
 TBD
