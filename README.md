@@ -109,6 +109,11 @@ If you've installed the certificate for the **Current User**:
 
 If you've installed the certificate for the **Local Machine**, repeat the same steps but instead open `certlm.msc`.
 
+#### `generate_ssl.exe` is flagged as a virus
+
+`generate_ssl.exe` is a Python application packed with PyInstaller and some anti-viruses may flag it as a virus.
+This application is a simple certificate generator and you can find its source code in `utils/generate_ssl.py`.
+
 ## Development
 
 TBD
