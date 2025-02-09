@@ -8,7 +8,7 @@ TBD
 
 ## Running locally
 
-> ![NOTE]
+> [!NOTE]
 > If you've already done all steps previously, you can skip to Step 7.
 
 ### 1. Prerequisites
@@ -43,7 +43,7 @@ To be able to connect to the locally running server, you must replace the IP add
 
 ### 4. Generate and import SSL certificate
 
-> ![IMPORTANT]
+> [!IMPORTANT]
 > Do not share the generated certificate! Generated certificate includes a private key that may be used to generate other certificates and compromise your security.
 
 A connection to the server is served over a secured connection. The server uses self-signed certificate that must be added to trusted authorities in order for the game
