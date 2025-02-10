@@ -56,7 +56,9 @@ Before you start, you'll need the following software downloaded and installed:
 
 1. [Latest `Prospect.Server.Api`](https://github.com/deiteris/Prospect/releases) from the Releases section
 
-1. [ASP.NET Core Runtime 8.0](https://aka.ms/dotnet-core-applaunch?framework=Microsoft.AspNetCore.App&framework_version=8.0.0&arch=x64&rid=win-x64&os=win10) installed.
+1. [.NET Runtime 8.0](https://aka.ms/dotnet-core-applaunch?missing_runtime=true&arch=x64&rid=win-x64&os=win10&apphost_version=8.0.11) installed.
+
+1. [ASP.NET Core 8.0](https://aka.ms/dotnet-core-applaunch?framework=Microsoft.AspNetCore.App&framework_version=8.0.0&arch=x64&rid=win-x64&os=win10) installed.
 
 1. A compatible The Cycle: Frontier game client. The server works with:
 
