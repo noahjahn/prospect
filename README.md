@@ -104,13 +104,13 @@ to successfully communicate with the local server. Do the following:
 
     1. Click **Finish**. A Security Warning popup may appear, make sure it specifies `2EA46.playfabapi.com` certification authority and click **Yes**.
 
-### 5. Add `steam_appid.txt` to the game
+### 5. Add `steam_appid` to the game
 
 1. Open the folder with The Cycle: Frontier and navigate to **Prospect** > **Binaries** > **Win64**.
 
-1. Right-click in the folder > **New** > **Text Document**, and name it `steam_appid.txt`.
+1. Right-click in the folder > **New** > **Text Document**, and name it `steam_appid`.
 
-1. Open `steam_appid.txt` and enter `480`.
+1. Open `steam_appid` and enter `480`.
 
 1. Save and close the file.
 
