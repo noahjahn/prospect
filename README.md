@@ -200,7 +200,7 @@ If the server works and the `hosts` file is saved, `Alt+Tab` to a game console t
 * `libcurl error 60 (Peer certificate cannot be authenticated with given CA certificates)` - indicates that the certificate was not installed correctly. Make sure that the certificate is present in `certmgr.msc` and there is only one certificate. Try removing the certificate and importing it again by following step 4.
   ![](./_assets/certificate_error.PNG)
 
-* `HTTP error code 500` - usually indicates that MongoDB is not running. Make sure that MongoDB is installed and and that `MongoDB Server` is running in `services.msc`.
+* `HTTP code: 500` - usually indicates that MongoDB is not running. Make sure that MongoDB is installed and and that `MongoDB Server` is running in `services.msc`.
   ![](./_assets/mongodb_error.PNG)
 
 ## Development
