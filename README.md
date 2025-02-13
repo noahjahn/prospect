@@ -14,34 +14,39 @@ Also known as "The Cycle: Frontier".
     * [x] Equip items
     * [ ] Deploy to Fortuna
   * [ ] Matchmaking
-    * [ ] Can deploy through matchmaking
+    * [x] Can deploy through matchmaking
     * [ ] Items insurance
     * [ ] Free loadouts (Season 3)
+  * [ ] Gameplay
+    * [ ] Can evac
+    * [ ] Can do quests
   * [ ] Inventory and loadout
     * [x] Items can be equipped
     * [x] Items can be unequipped.
     * [x] Loadout is carried into matchmaking
-    * [ ] Items are automatically stacked
+    * [x] Items are automatically stacked
+    * [x] Weapon mods can be equipped
+    * [x] Weapon appearance can be changed
   * [ ] Quests
     * [x] Quests can be accepted
     * [ ] Quests can be removed
-    * [ ] Quest progress is tracked
     * [ ] Quests can be completed
     * [ ] Job boards
-  * [ ] Faction progression
+  * [x] Faction progression
   * [ ] Season pass
   * [x] Character appearance and emotes
   * [ ] Shops
     * [x] Items can be bought
-    * [ ] Items can be sold
+    * [x] Items can be sold (balance and progression is received)
+  * [ ] Crafting station
   * [ ] Season pass
   * [ ] Quarters
     * [ ] Generator
     * [ ] Quarter upgrades
-  * [ ] Player balance
+  * [x] Player balance
     * [x] K-Marks
     * [x] Aurum
-    * [ ] Insurance Tokens
+    * [x] Insurance Tokens
 
 ## Running locally
 
