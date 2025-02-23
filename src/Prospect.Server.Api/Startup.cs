@@ -19,7 +19,7 @@ public class Startup
     }
 
     private IConfiguration Configuration { get; }
-        
+
     public void ConfigureServices(IServiceCollection services)
     {
         services.Configure<AuthTokenSettings>(Configuration.GetSection(nameof(AuthTokenSettings)));
@@ -29,10 +29,10 @@ public class Startup
         services.AddSingleton<AuthTokenService>();
         services.AddSingleton<UserDataService>();
         services.AddSingleton<TitleDataService>();
-            
+
         services.AddSingleton<DbUserService>();
         services.AddSingleton<DbEntityService>();
-            
+
         services.AddSingleton<DbUserDataService>();
 
         services.AddHostedService<QosService>();
@@ -40,10 +40,10 @@ public class Startup
 
         services.AddScoped<CloudScriptService>();
         services.AddSingleton<CloudScriptFunctionLoader>();
-        
+
         services.AddAuthentication(_ =>
             {
-                    
+
             })
             .AddUserAuthentication(_ => {})
             .AddEntityAuthentication(_ => {});
@@ -51,7 +51,7 @@ public class Startup
         services.AddHttpContextAccessor();
 
         services.AddSignalR();
-        
+
         services.AddControllers().AddJsonOptions(options =>
         {
             options.JsonSerializerOptions.Converters.Add(new DateTimeConverter());
@@ -64,7 +64,8 @@ public class Startup
         {
             app.UseDeveloperExceptionPage();
         }
-            
+
+        app.UseHttpsRedirection();
         app.UseSerilogRequestLogging();
         app.UseMiddleware<RequestLoggerMiddleware>();
         app.UseRouting();

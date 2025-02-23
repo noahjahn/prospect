@@ -9,7 +9,7 @@ public class GetSignalRConnection : ICloudScriptFunction<FYGetSignalRConnection,
     {
         return Task.FromResult(new FYGetSignalRConnectionResult
         {
-            Url = "https://localhost:5443/signalr/?hub=pubsub",
+            Url = "https://2ea46.playfabapi.com/signalr/?hub=pubsub",
             AccessToken = "TEST"
         });
     }

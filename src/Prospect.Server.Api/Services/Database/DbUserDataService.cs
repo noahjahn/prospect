@@ -31,7 +31,7 @@ public class DbUserDataService : BaseDbService<PlayFabUserData>
             Public = isPublic,
             LastUpdated = DateTime.UtcNow
         };
-            
+
         await Collection.InsertOneAsync(data);
 
         return data;
@@ -42,7 +42,7 @@ public class DbUserDataService : BaseDbService<PlayFabUserData>
         var query = publicOnly
             ? Collection.Find(data => data.PlayFabId == playFabId && data.Public)
             : Collection.Find(data => data.PlayFabId == playFabId);
-            
+
         return await query.ToCursorAsync();
     }
 
@@ -51,7 +51,7 @@ public class DbUserDataService : BaseDbService<PlayFabUserData>
         var update = Builders<PlayFabUserData>.Update
             .Set(data => data.Value, value)
             .Set(data => data.LastUpdated, DateTime.UtcNow);
-            
+
         await Collection.UpdateOneAsync(data => data.Id == dataId, update);
     }
 }

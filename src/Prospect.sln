@@ -1,12 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.31727.386
+# Visual Studio Version 17
+VisualStudioVersion = 17.12.35514.174 d17.12
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Prospect.Agent", "Prospect.Agent\Prospect.Agent.vcxproj", "{A9BA7D25-F239-4320-A0DC-85E8001FD669}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Prospect.Launcher", "Prospect.Launcher\Prospect.Launcher.csproj", "{1C8F4637-9552-4726-818B-196ECE2AE966}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Prospect.Server.Api", "Prospect.Server.Api\Prospect.Server.Api.csproj", "{A539B020-8BEC-497F-9176-DC2665D927A1}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Libs", "Libs", "{76364BAA-BC9D-4A92-AA2A-8914FAE22834}"
@@ -33,20 +29,6 @@ Global
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{A9BA7D25-F239-4320-A0DC-85E8001FD669}.Debug|x64.ActiveCfg = Debug|x64
-		{A9BA7D25-F239-4320-A0DC-85E8001FD669}.Debug|x64.Build.0 = Debug|x64
-		{A9BA7D25-F239-4320-A0DC-85E8001FD669}.Debug|x86.ActiveCfg = Debug|x64
-		{A9BA7D25-F239-4320-A0DC-85E8001FD669}.Release|x64.ActiveCfg = Release|x64
-		{A9BA7D25-F239-4320-A0DC-85E8001FD669}.Release|x64.Build.0 = Release|x64
-		{A9BA7D25-F239-4320-A0DC-85E8001FD669}.Release|x86.ActiveCfg = Release|x64
-		{1C8F4637-9552-4726-818B-196ECE2AE966}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{1C8F4637-9552-4726-818B-196ECE2AE966}.Debug|x64.Build.0 = Debug|Any CPU
-		{1C8F4637-9552-4726-818B-196ECE2AE966}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{1C8F4637-9552-4726-818B-196ECE2AE966}.Debug|x86.Build.0 = Debug|Any CPU
-		{1C8F4637-9552-4726-818B-196ECE2AE966}.Release|x64.ActiveCfg = Release|Any CPU
-		{1C8F4637-9552-4726-818B-196ECE2AE966}.Release|x64.Build.0 = Release|Any CPU
-		{1C8F4637-9552-4726-818B-196ECE2AE966}.Release|x86.ActiveCfg = Release|Any CPU
-		{1C8F4637-9552-4726-818B-196ECE2AE966}.Release|x86.Build.0 = Release|Any CPU
 		{A539B020-8BEC-497F-9176-DC2665D927A1}.Debug|x64.ActiveCfg = Debug|Any CPU
 		{A539B020-8BEC-497F-9176-DC2665D927A1}.Debug|x64.Build.0 = Debug|Any CPU
 		{A539B020-8BEC-497F-9176-DC2665D927A1}.Debug|x86.ActiveCfg = Debug|Any CPU
@@ -99,17 +81,15 @@ Global
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
-	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {12888C62-D3A2-4DD7-A9A5-1481D95865D0}
-	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{A9BA7D25-F239-4320-A0DC-85E8001FD669} = {76364BAA-BC9D-4A92-AA2A-8914FAE22834}
-		{1C8F4637-9552-4726-818B-196ECE2AE966} = {31D3D5D2-B011-4F9B-B6CC-D0A35675D797}
 		{A539B020-8BEC-497F-9176-DC2665D927A1} = {31D3D5D2-B011-4F9B-B6CC-D0A35675D797}
 		{E65720EB-7ED5-4D81-BE06-1DFFD57C1C47} = {31D3D5D2-B011-4F9B-B6CC-D0A35675D797}
 		{DE064B5C-5E9A-44FB-8DB0-5E61DD8ED4F6} = {76364BAA-BC9D-4A92-AA2A-8914FAE22834}
 		{380DD490-8F01-4025-91D7-74C289AA5B75} = {76364BAA-BC9D-4A92-AA2A-8914FAE22834}
 		{14DAE1A4-6F3F-43C0-AC17-9DCDE420AF34} = {168B6247-2D33-4942-AB3F-C5041B3BDFEA}
 		{71E3E262-49C5-4B6C-9670-D0741CEDB63B} = {76364BAA-BC9D-4A92-AA2A-8914FAE22834}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {12888C62-D3A2-4DD7-A9A5-1481D95865D0}
 	EndGlobalSection
 EndGlobal

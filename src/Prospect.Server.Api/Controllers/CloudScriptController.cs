@@ -29,7 +29,7 @@ public class CloudScriptController : Controller
 
         var result = await _cloudScriptService.ExecuteAsync(request.FunctionName, request.FunctionParameter, request.GeneratePlayStreamEvent);
         if (result != null)
-        { 
+        {
             return Ok(new ClientResponse<FExecuteFunctionResult>
             {
                 Code = 200,

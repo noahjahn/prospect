@@ -1,67 +1,75 @@
-﻿using Prospect.Server.Api.Services.Auth.Extensions;
+﻿using System.Text.Json;
+using System.Text.Json.Serialization;
+using Prospect.Server.Api.Services.Auth.Extensions;
 using Prospect.Server.Api.Services.CloudScript.Models;
+using Prospect.Server.Api.Services.UserData;
 
 namespace Prospect.Server.Api.Services.CloudScript.Functions;
 
+public class FYGetCharacterVanityResponse {
+    [JsonPropertyName("success")]
+    public bool Success { get; set; }
+
+    [JsonPropertyName("returnVanity")]
+    public FYCharacterVanity ReturnVanity { get; set; }
+}
+
+public class FYVanityMaterialItem {
+    [JsonPropertyName("id")]
+    public string ID { get; set; }
+    [JsonPropertyName("materialIndex")]
+    public int MaterialIndex { get; set; }
+}
+
+public class FYCharacterVanity {
+    [JsonPropertyName("userId")]
+    public string UserID { get; set; }
+    [JsonPropertyName("head_item")]
+    public FYVanityMaterialItem HeadItem { get; set; }
+    [JsonPropertyName("boots_item")]
+    public FYVanityMaterialItem BootsItem { get; set; }
+    [JsonPropertyName("chest_item")]
+    public FYVanityMaterialItem ChestItem { get; set; }
+    [JsonPropertyName("glove_item")]
+    public FYVanityMaterialItem GloveItem { get; set; }
+    [JsonPropertyName("base_suit_item")]
+    public FYVanityMaterialItem BaseSuitItem { get; set; }
+    [JsonPropertyName("melee_weapon_item")]
+    public FYVanityMaterialItem MeleeWeaponItem { get; set; }
+    [JsonPropertyName("body_type")]
+    public int BodyType { get; set; }
+    [JsonPropertyName("archetype_id")]
+    public string ArchetypeID { get; set; }
+    [JsonPropertyName("slot_index")]
+    public int SlotIndex { get; set; }
+}
+
 [CloudScriptFunction("GetCharacterVanity")]
-public class GetCharacterVanity : ICloudScriptFunction<FYGetCharacterVanityRequest, object?>
+public class GetCharacterVanity : ICloudScriptFunction<FYGetCharacterVanityRequest, FYGetCharacterVanityResponse?>
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly UserDataService _userDataService;
 
-    public GetCharacterVanity(IHttpContextAccessor httpContextAccessor)
+    public GetCharacterVanity(IHttpContextAccessor httpContextAccessor, UserDataService userDataService)
     {
         _httpContextAccessor = httpContextAccessor;
+        _userDataService = userDataService;
     }
-    
-    public Task<object?> ExecuteAsync(FYGetCharacterVanityRequest request)
+
+    public async Task<FYGetCharacterVanityResponse?> ExecuteAsync(FYGetCharacterVanityRequest request)
     {
         var context = _httpContextAccessor.HttpContext;
         if (context == null)
         {
-            return Task.FromResult<object?>(null);
+            return null;
         }
-        
-        return Task.FromResult<object?>(new
-        {
-            userId = context.User.FindAuthUserId(),
-            error = (object?)null,
-            returnVanity = new
-            {
-                userId = context.User.FindAuthUserId(),
-                head_item = new
-                {
-                    id = "Black02M_Head1",
-                    materialIndex = 0,
-                },
-                boots_item = new
-                {
-                    id = "StarterOutfit01_Boots_M",
-                    materialIndex = 0,
-                },
-                chest_item = new
-                {
-                    id = "StarterOutfit01_Chest_M",
-                    materialIndex = 0,
-                },
-                glove_item = new
-                {
-                    id = "StarterOutfit01_Gloves_M",
-                    materialIndex = 0,
-                },
-                base_suit_item = new
-                {
-                    id = "StarterOutfit01M_BaseSuit",
-                    materialIndex = 0,
-                },
-                melee_weapon_item = new
-                {
-                    id = "Melee_Omega",
-                    materialIndex = 0,
-                },
-                body_type = 1,
-                archetype_id = "TheProspector",
-                slot_index = 0
-            }
-        });
+        var userId = context.User.FindAuthUserId();
+        var userData = await _userDataService.FindAsync(userId, userId, new List<string>{"CharacterVanity"});
+        var returnVanity = JsonSerializer.Deserialize<FYCharacterVanity>(userData["CharacterVanity"].Value);
+
+        return new FYGetCharacterVanityResponse{
+            Success = true,
+            ReturnVanity = returnVanity,
+        };
     }
 }

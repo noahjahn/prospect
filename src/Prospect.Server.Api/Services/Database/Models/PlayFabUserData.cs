@@ -8,7 +8,7 @@ public class PlayFabUserData
     [BsonId]
     [BsonRepresentation(BsonType.ObjectId)]
     public string Id { get; set; }
-        
+
     /// <summary>
     ///     PlayFabUser.Id
     /// </summary>
@@ -19,15 +19,15 @@ public class PlayFabUserData
     [BsonRequired]
     [BsonElement("Key")]
     public string Key { get; set; }
-        
+
     [BsonRequired]
     [BsonElement("Value")]
     public string Value { get; set; }
-        
+
     [BsonRequired]
     [BsonElement("Public")]
     public bool Public { get; set; }
-        
+
     [BsonRequired]
     [BsonElement("LastUpdated")]
     public DateTime LastUpdated { get; set; }

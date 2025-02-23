@@ -4,9 +4,9 @@ namespace Prospect.Server.Api.Services.CloudScript.Models.Data;
 
 public class FYActiveContractPlayerData
 {
-    [JsonPropertyName("contractId")] 
-    public string ContractId { get; set; } = null!;
+    [JsonPropertyName("contractId")]
+    public string ContractID { get; set; } = null!;
 
     [JsonPropertyName("progress")]
-    public List<int> Progress { get; set; } = null!;
+    public int[] Progress { get; set; } = null!;
 }

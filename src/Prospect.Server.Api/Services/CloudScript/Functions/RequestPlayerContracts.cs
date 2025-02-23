@@ -39,17 +39,14 @@ public class RequestPlayerContracts : ICloudScriptFunction<FYGetPlayerContractsR
                             new FYFactionContractData
                             {
                                 ContractId = "NEW-Easy-ICA-Gather-1",
-                                ContractIsLockedDueToLowFactionReputation = false
                             },
                             new FYFactionContractData
                             {
                                 ContractId = "NEW-Medium-ICA-Uplink-1",
-                                ContractIsLockedDueToLowFactionReputation = false
                             },
                             new FYFactionContractData
                             {
                                 ContractId = "NEW-Hard-ICA-Uplink-1",
-                                ContractIsLockedDueToLowFactionReputation = false
                             }
                         }
                     },
@@ -61,17 +58,14 @@ public class RequestPlayerContracts : ICloudScriptFunction<FYGetPlayerContractsR
                             new FYFactionContractData
                             {
                                 ContractId = "NEW-Easy-KOR-Mine-4",
-                                ContractIsLockedDueToLowFactionReputation = false
                             },
                             new FYFactionContractData
                             {
                                 ContractId = "NEW-Medium-KOR-Mine-1",
-                                ContractIsLockedDueToLowFactionReputation = false
                             },
                             new FYFactionContractData
                             {
                                 ContractId = "NEW-Hard-KOR-PvP-6",
-                                ContractIsLockedDueToLowFactionReputation = false
                             }
                         }
                     },
@@ -83,17 +77,14 @@ public class RequestPlayerContracts : ICloudScriptFunction<FYGetPlayerContractsR
                             new FYFactionContractData
                             {
                                 ContractId = "NEW-Easy-Osiris-Brightcaps-1",
-                                ContractIsLockedDueToLowFactionReputation = false
                             },
                             new FYFactionContractData
                             {
                                 ContractId = "NEW-Medium-Osiris-Gather-1",
-                                ContractIsLockedDueToLowFactionReputation = false
                             },
                             new FYFactionContractData
                             {
                                 ContractId = "NEW-Hard-Osiris-Gather-7",
-                                ContractIsLockedDueToLowFactionReputation = false
                             }
                         }
                     }

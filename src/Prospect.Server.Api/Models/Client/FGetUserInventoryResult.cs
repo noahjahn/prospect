@@ -11,14 +11,14 @@ public class FGetUserInventoryResult
     [JsonPropertyName("Inventory")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
     public List<FItemInstance>? Inventory { get; set; }
-        
+
     /// <summary>
     ///     [optional] Array of virtual currency balance(s) belonging to the user.
     /// </summary>
     [JsonPropertyName("VirtualCurrency")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
     public Dictionary<string, int>? VirtualCurrency { get; set; }
-        
+
     /// <summary>
     ///     [optional] Array of virtual currency balance(s) belonging to the user.
     /// </summary>

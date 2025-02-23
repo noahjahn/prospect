@@ -26,16 +26,7 @@ public class GetCraftingInProgressData : ICloudScriptFunction<FYGetCraftingInPro
         {
             UserId = context.User.FindAuthUserId(),
             Error = string.Empty,
-            ItemCurrentlyBeingCrafted = new FYItemCurrentlyBeingCrafted
-            {
-                ItemId = null,
-                ItemRarity = -1,
-                PurchaseAmount = -1,
-                UtcTimestampWhenCraftingStarted = new FYTimestamp
-                {
-                    Seconds = 0
-                }
-            }
+            ItemCurrentlyBeingCrafted = {},
         });
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System.Net.Mime;
+using System.Text.Json;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
@@ -21,6 +22,7 @@ public class ClientController : Controller
 {
     private const int AppIdDefault = 480;
     private const int AppIdCycleBeta = 1600361;
+    private const int AppIdCycle = 868270;
 
     private readonly ILogger<ClientController> _logger;
     private readonly PlayFabSettings _settings;
@@ -31,9 +33,9 @@ public class ClientController : Controller
     private readonly TitleDataService _titleDataService;
 
     public ClientController(ILogger<ClientController> logger,
-        IOptions<PlayFabSettings> settings, 
-        AuthTokenService authTokenService, 
-        DbUserService userService, 
+        IOptions<PlayFabSettings> settings,
+        AuthTokenService authTokenService,
+        DbUserService userService,
         DbEntityService entityService,
         UserDataService userDataService,
         TitleDataService titleDataService)
@@ -46,7 +48,7 @@ public class ClientController : Controller
         _userDataService = userDataService;
         _titleDataService = titleDataService;
     }
-        
+
     [AllowAnonymous]
     [HttpPost("LoginWithSteam")]
     [Produces(MediaTypeNames.Application.Json)]
@@ -55,18 +57,18 @@ public class ClientController : Controller
         if (!string.IsNullOrEmpty(request.SteamTicket))
         {
             var ticket = AppTicket.Parse(request.SteamTicket);
-            if (ticket.IsValid && ticket.HasValidSignature && (ticket.AppId == AppIdDefault || ticket.AppId == AppIdCycleBeta))
+            if (ticket.IsValid && ticket.HasValidSignature && (ticket.AppId == AppIdDefault || ticket.AppId == AppIdCycleBeta || ticket.AppId == AppIdCycle))
             {
                 var userSteamId = ticket.SteamId.ToString();
-                    
+
                 var user = await _userService.FindOrCreateAsync(PlayFabUserAuthType.Steam, userSteamId);
                 var entity = await _entityService.FindOrCreateAsync(user.Id);
-                    
+
                 var userTicket = _authTokenService.GenerateUser(entity);
                 var entityTicket = _authTokenService.GenerateEntity(entity);
 
                 await _userDataService.InitAsync(user.Id);
-                    
+
                 return Ok(new ClientResponse<FServerLoginResult>
                 {
                     Code = 200,
@@ -116,14 +118,14 @@ public class ClientController : Controller
                     }
                 });
             }
-            
+
             _logger.LogWarning("Invalid steam ticket specified, IsExpired {IsExpired}, IsValid {IsValid}, HasValidSignature {Sig}, AppId {AppId}",
                 ticket.IsExpired,
                 ticket.IsValid,
                 ticket.HasValidSignature,
                 ticket.AppId);
         }
-            
+
         return BadRequest(new ClientResponse
         {
             Code = 400,
@@ -138,6 +140,19 @@ public class ClientController : Controller
     [Produces(MediaTypeNames.Application.Json)]
     [Authorize(AuthenticationSchemes = UserAuthenticationOptions.DefaultScheme)]
     public IActionResult AddGenericId(FAddGenericIDRequest request)
+    {
+        return Ok(new ClientResponse<object>
+        {
+            Code = 200,
+            Status = "OK",
+            Data = new {}
+        });
+    }
+
+    [HttpPost("GetStoreItems")]
+    [Produces(MediaTypeNames.Application.Json)]
+    [Authorize(AuthenticationSchemes = UserAuthenticationOptions.DefaultScheme)]
+    public IActionResult GetStoreItems(FGetStoreItems request)
     {
         return Ok(new ClientResponse<object>
         {
@@ -170,7 +185,7 @@ public class ClientController : Controller
     {
         var userId = User.FindAuthUserId();
         await _userDataService.UpdateAsync(userId, request.PlayFabId, request.Data);
-            
+
         return Ok(new ClientResponse<FUpdateUserDataResult>
         {
             Code = 200,
@@ -189,7 +204,7 @@ public class ClientController : Controller
     {
         var userId = User.FindAuthUserId();
         var userData = await _userDataService.FindAsync(userId, request.PlayFabId, request.Keys);
-            
+
         return Ok(new ClientResponse<FGetUserDataResult>
         {
             Code = 200,
@@ -205,15 +220,18 @@ public class ClientController : Controller
     [HttpPost("GetUserReadOnlyData")]
     [Produces(MediaTypeNames.Application.Json)]
     [Authorize(AuthenticationSchemes = UserAuthenticationOptions.DefaultScheme)]
-    public IActionResult GetUserReadOnlyData(FGetUserDataRequest request)
+    public async Task<IActionResult> GetUserReadOnlyData(FGetUserDataRequest request)
     {
+        var userId = User.FindAuthUserId();
+        var userData = await _userDataService.FindAsync(userId, request.PlayFabId, request.Keys);
+
         return Ok(new ClientResponse<FGetUserDataResult>
         {
             Code = 200,
             Status = "OK",
             Data = new FGetUserDataResult
             {
-                Data = new Dictionary<string, FUserDataRecord>(),
+                Data = userData,
                 DataVersion = 0
             }
         });
@@ -222,40 +240,63 @@ public class ClientController : Controller
     [HttpPost("GetUserInventory")]
     [Produces(MediaTypeNames.Application.Json)]
     [Authorize(AuthenticationSchemes = UserAuthenticationOptions.DefaultScheme)]
-    public IActionResult GetUserReadOnlyData(FGetUserInventoryRequest request)
+    public async Task<IActionResult> GetUserInventory(FGetUserInventoryRequest request)
     {
+        var userId = User.FindAuthUserId();
+        var userData = await _userDataService.FindAsync(userId, userId, new List<string>{"Balance", "Inventory", "VanityItems"});
+        var inventory = JsonSerializer.Deserialize<FYCustomItemInfo[]>(userData["Inventory"].Value);
+        // TODO: Per-user vanity
+        // var vanity = JsonSerializer.Deserialize<CustomVanityItem[]>(userData["VanityItems"].Value);
+        var titleData = _titleDataService.Find(new List<string>{"Blueprints", "Vanities"});
+        var blueprints = JsonSerializer.Deserialize<Dictionary<string, TitleDataBlueprintInfo>>(titleData["Blueprints"]);
+        var vanity = JsonSerializer.Deserialize<TitleDataVanityInfo[]>(titleData["Vanities"]);
+        List<FItemInstance> items = new List<FItemInstance>();
+        foreach (var item in inventory) {
+            if (!blueprints.ContainsKey(item.BaseItemId)) {
+                _logger.LogWarning("Failed to find item with ID {ItemID}", item.BaseItemId);
+                continue;
+            }
+            var blueprintData = blueprints[item.BaseItemId];
+            items.Add(new FItemInstance {
+                ItemId = item.BaseItemId,
+                ItemInstanceId = item.ItemId,
+                ItemClass = blueprintData.Kind,
+                // PurchaseDate = DateTime.Now, // TODO
+                // UnitPrice = 0,
+                CatalogVersion = "StaticItems",
+                CustomData = new Dictionary<string, string> {
+                    ["mods"] = JsonSerializer.Serialize(item.ModData),
+                    // ["insurance"] = "None", // TODO
+                    ["vanity"] = $"{{\"p\":{item.PrimaryVanityId},\"s\":{item.SecondaryVanityId}}}", // p - primary, s - secondary
+                    ["coreData"] = $"{{\"a\":{item.Amount},\"d\":{item.Durability}}}", // a - amount, d - durability
+                    ["origin"] = JsonSerializer.Serialize(item.Origin),
+                    ["rolledPerks"] = JsonSerializer.Serialize(item.RolledPerks),
+                }
+            });
+        }
+
+        foreach (var item in vanity) {
+            items.Add(new FItemInstance {
+                ItemId = item.Name,
+                // ItemInstanceId is not required since it's not a unique item.
+                ItemClass = "Vanity",
+                // PurchaseDate = DateTime.Now, // TODO
+                CatalogVersion = "StaticItems",
+                CustomData = new Dictionary<string, string> {
+                    ["coreData"] = "{}", // Vanity items don't seem to have any coreData. But it's still required since it's an inventory item.
+                    ["origin"] = "{}",
+                }
+            });
+        }
+
         return Ok(new ClientResponse<FGetUserInventoryResult>
         {
             Code = 200,
             Status = "OK",
             Data = new FGetUserInventoryResult
             {
-                Inventory = new List<FItemInstance>
-                {
-                    // new FItemInstance
-                    // {
-                    //     ItemId = "Helmet_03",
-                    //     ItemInstanceId = "0102030405060708",
-                    //     ItemClass = "Helmet",
-                    //     PurchaseDate = DateTime.Now.AddDays(-1),
-                    //     CatalogVersion = "StaticItems",
-                    //     DisplayName = "Helmet",
-                    //     UnitPrice = 0,
-                    //     CustomData = new Dictionary<string, string>
-                    //     {
-                    //         ["insurance"] = "None",
-                    //         ["mods"] = "{\"m\":[]}",
-                    //         ["vanity_misc_data"] = "{\"v\":\"\",\"s\":\"\",\"l\":3,\"a\":1,\"d\":300}"
-                    //     }
-                    // }
-                },
-                VirtualCurrency = new Dictionary<string, int>
-                {
-                    ["AE"] = 0,
-                    ["AS"] = 0,
-                    ["AU"] = int.MaxValue,
-                    ["SC"] = int.MaxValue
-                },
+                Inventory = items,
+                VirtualCurrency = JsonSerializer.Deserialize<Dictionary<string, int>>(userData["Balance"].Value),
                 VirtualCurrencyRechargeTimes = new Dictionary<string, FVirtualCurrencyRechargeTime>()
             }
         });

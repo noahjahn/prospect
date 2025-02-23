@@ -32,7 +32,10 @@ public class CloudScriptService
         using (var scope = _serviceScopeFactory.CreateScope())
         {
             var functionClazz = ActivatorUtilities.CreateInstance(scope.ServiceProvider, function.Clazz);
-            var functionParam = JsonSerializer.Deserialize(parameter, function.RequestType);
+            // Some functions have empty parameters which result in malformed JSON.
+            var parameterJson = parameter == "" ? "{}" : parameter;
+            // _logger.LogInformation("Received parameter: {Param}", parameterJson);
+            var functionParam = JsonSerializer.Deserialize(parameterJson, function.RequestType);
             if (functionParam == null)
             {
                 _logger.LogWarning("Function {Function} deserialization returned null", name);
@@ -40,9 +43,9 @@ public class CloudScriptService
             }
 
             var functionTask = function.Delegate(functionClazz, functionParam);
-            
+
             await functionTask;
-            
+
             return (object)((dynamic)functionTask).Result;
         }
     }

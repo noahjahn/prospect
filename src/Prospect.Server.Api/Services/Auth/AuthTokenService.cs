@@ -11,10 +11,10 @@ public class AuthTokenService
 {
     private const string DefaultIssuer = "ProspectApi";
     private const string DefaultAudience = "Prospect";
-        
+
     private readonly SymmetricSecurityKey _securityKey;
     private readonly JwtSecurityTokenHandler _tokenHandler;
-        
+
     public AuthTokenService(IOptions<AuthTokenSettings> options)
     {
         _securityKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(options.Value.Secret));
@@ -59,7 +59,7 @@ public class AuthTokenService
     public ClaimsPrincipal Validate(string token)
     {
         var tokenHandler = new JwtSecurityTokenHandler();
-            
+
         try
         {
             return tokenHandler.ValidateToken(token, new TokenValidationParameters

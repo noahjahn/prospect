@@ -9,7 +9,10 @@ public class VivoxSettings : ICloudScriptFunction<FYEmptyRequest, FYVivoxSetting
     {
         return Task.FromResult(new FYVivoxSettingsData
         {
-            
+            // TODO: Replace with app configuration
+            // VivoxDomain = "",
+            // VivoxIssuer = "",
+            // VivoxServer = ""
         });
     }
 }

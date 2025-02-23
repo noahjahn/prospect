@@ -22,15 +22,15 @@ public class RequestLoggerMiddleware
         if (context.Request.Method == "POST")
         {
             var requestId = "NULL";
-                
+
             if (context.Request.Headers.TryGetValue("X-RequestID", out var requestIdValues))
             {
                 requestId = requestIdValues.ToString();
             }
-                
+
             _logger.LogDebug("URL {Url} RequestId {RequestId} Body {Body}", context.Request.GetDisplayUrl(), requestId, body);
         }
-            
+
         await _next(context);
     }
 

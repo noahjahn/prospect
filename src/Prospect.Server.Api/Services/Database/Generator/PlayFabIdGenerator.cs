@@ -6,7 +6,7 @@ namespace Prospect.Server.Api.Services.Database.Generator;
 public class PlayFabIdGenerator : IIdGenerator
 {
     private static readonly RNGCryptoServiceProvider Random = new RNGCryptoServiceProvider();
-        
+
     public object GenerateId(object container, object document)
     {
         Span<byte> data = stackalloc byte[8];
