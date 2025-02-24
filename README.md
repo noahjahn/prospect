@@ -7,7 +7,7 @@ Also known as "The Cycle: Frontier".
 - [Features](#features)
 - [Running locally](#running-locally)
   - [1. Prerequisites](#1-prerequisites)
-  - [1.1 How to download Season 2 client from SteamDB using Steam console](#11-how-to-download-season-2-client-from-steamdb-using-steam-console)
+    - [1.1 How to download Season 2 client from SteamDB using Steam console](#11-how-to-download-season-2-client-from-steamdb-using-steam-console)
   - [2. Unpack `Prospect.Server.Api`](#2-unpack-prospectserverapi)
   - [3. Patch the `hosts` file](#3-patch-the-hosts-file)
   - [4. Generate and import SSL certificate](#4-generate-and-import-ssl-certificate)
@@ -104,12 +104,12 @@ Before you start, you'll need the following software downloaded and installed:
 
    - Any other version, even Season 1 works.
 
-### 1.1 How to download Season 2 client from SteamDB using Steam console
+#### 1.1 How to download Season 2 client from SteamDB using Steam console
 
 > [!WARNING]
 > This will overwrite the existing client if you try to download a different manifest!
 
-1. With Steam running, click <steam://nav/console> to open Steam console. Alternatively, you can press `Win+R` and enter `steam://nav/console`.
+1. With Steam running, press `Win+R` and enter `steam://nav/console`. A Steam console will open.
 
 1. Open [The Cycle: Frontier SteamDB manifests](https://steamdb.info/depot/868271/manifests/).
 
