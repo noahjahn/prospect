@@ -113,6 +113,8 @@ Before you start, you'll need the following software downloaded and installed:
 
 1. Open [The Cycle: Frontier SteamDB manifests](https://steamdb.info/depot/868271/manifests/).
 
+1. Make sure you have **Copy format** set to **Steam console**.
+
 1. Press `CTRL+F` and enter `4623363103423775682` to find the manifest for Season 2 version 2.7.2 client.
 
 1. Click the ![Copy](./_assets/steamdb_copy.PNG) icon to copy the download command.
