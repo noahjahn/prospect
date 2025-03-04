@@ -5,6 +5,7 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+        <Configurations>Debug;Release;Season 3 Release;Season 2 Release;Season 2 Debug;Season 3 Debug</Configurations>
     </PropertyGroup>
 
 	<PropertyGroup>

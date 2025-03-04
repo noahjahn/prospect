@@ -1,4 +1,4 @@
-
+﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.12.35514.174
@@ -20,6 +20,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Prospect.Unreal.Tests", "Prospect.Unreal.Tests\Prospect.Unreal.Tests.csproj", "{14DAE1A4-6F3F-43C0-AC17-9DCDE420AF34}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Prospect.Unreal.Generator", "Prospect.Unreal.Generator\Prospect.Unreal.Generator.csproj", "{71E3E262-49C5-4B6C-9670-D0741CEDB63B}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Prospect.Client.Loader", "Prospect.Client.Loader\Prospect.Client.Loader.vcxproj", "{8170A17F-E536-4FDB-BC01-78BF09A9A48B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -216,6 +218,7 @@ Global
 		{380DD490-8F01-4025-91D7-74C289AA5B75} = {76364BAA-BC9D-4A92-AA2A-8914FAE22834}
 		{14DAE1A4-6F3F-43C0-AC17-9DCDE420AF34} = {168B6247-2D33-4942-AB3F-C5041B3BDFEA}
 		{71E3E262-49C5-4B6C-9670-D0741CEDB63B} = {76364BAA-BC9D-4A92-AA2A-8914FAE22834}
+		{8170A17F-E536-4FDB-BC01-78BF09A9A48B} = {31D3D5D2-B011-4F9B-B6CC-D0A35675D797}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {12888C62-D3A2-4DD7-A9A5-1481D95865D0}

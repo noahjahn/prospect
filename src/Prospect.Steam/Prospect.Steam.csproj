@@ -3,6 +3,7 @@
     <PropertyGroup>
         <TargetFramework>net8.0</TargetFramework>
         <ImplicitUsings>true</ImplicitUsings>
+        <Configurations>Debug;Release;Season 3 Release;Season 2 Release;Season 2 Debug;Season 3 Debug</Configurations>
     </PropertyGroup>
 
 </Project>

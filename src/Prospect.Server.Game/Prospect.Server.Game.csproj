@@ -5,6 +5,7 @@
         <TargetFramework>net8.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
+        <Configurations>Debug;Release;Season 3 Release;Season 2 Release;Season 2 Debug;Season 3 Debug</Configurations>
     </PropertyGroup>
 
     <ItemGroup>

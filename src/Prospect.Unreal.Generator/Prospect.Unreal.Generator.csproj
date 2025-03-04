@@ -4,6 +4,7 @@
         <TargetFramework>netstandard2.0</TargetFramework>
         <LangVersion>9.0</LangVersion>
 		<IsRoslynComponent>true</IsRoslynComponent>
+		<Configurations>Debug;Release;Season 3 Release;Season 2 Release;Season 2 Debug;Season 3 Debug</Configurations>
     </PropertyGroup>
 
     <ItemGroup>
