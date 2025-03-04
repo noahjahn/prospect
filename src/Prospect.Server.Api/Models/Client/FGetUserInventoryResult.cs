@@ -1,5 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 using Prospect.Server.Api.Models.Client.Data;
+using Prospect.Server.Api.Models.Data;
 
 namespace Prospect.Server.Api.Models.Client;
 
@@ -17,7 +18,7 @@ public class FGetUserInventoryResult
     /// </summary>
     [JsonPropertyName("VirtualCurrency")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
-    public Dictionary<string, int>? VirtualCurrency { get; set; }
+    public PlayerBalance? VirtualCurrency { get; set; }
 
     /// <summary>
     ///     [optional] Array of virtual currency balance(s) belonging to the user.

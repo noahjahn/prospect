@@ -1,5 +1,6 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Prospect.Server.Api.Models.Data;
 using Prospect.Server.Api.Services.Auth.Extensions;
 using Prospect.Server.Api.Services.CloudScript;
 using Prospect.Server.Api.Services.UserData;
@@ -138,7 +139,7 @@ public class PurchaseWeaponShopItemFunction : ICloudScriptFunction<PurchaseWeapo
         }
         var userData = await _userDataService.FindAsync(userId, userId, new List<string>{"Inventory", "Balance"});
         var inventory = JsonSerializer.Deserialize<List<FYCustomItemInfo>>(userData["Inventory"].Value);
-        var balance = JsonSerializer.Deserialize<Dictionary<string, int>>(userData["Balance"].Value);
+        var balance = JsonSerializer.Deserialize<PlayerBalance>(userData["Balance"].Value);
         var blueprintsData = _titleDataService.Find(new List<string>{"Blueprints"});
         var blueprints = JsonSerializer.Deserialize<Dictionary<string, TitleDataBlueprintInfo>>(blueprintsData["Blueprints"]);
         if (!blueprints.ContainsKey(request.BaseItemID)) {
@@ -165,16 +166,15 @@ public class PurchaseWeaponShopItemFunction : ICloudScriptFunction<PurchaseWeapo
             if (ingredient.Currency == "SoftCurrency") {
                 var buyCost = request.PurchaseAmount * ingredient.Amount;
                 remaining -= buyCost;
-                balance["SC"] -= buyCost;
-                changedCurrencies.Add(new FYCurrencyItem { CurrencyName = "SoftCurrency", Amount = balance["SC"] });
+                balance.SoftCurrency -= buyCost;
+                changedCurrencies.Add(new FYCurrencyItem { CurrencyName = "SoftCurrency", Amount = balance.SoftCurrency });
             } else if (ingredient.Currency == "Aurum") {
                 var buyCost = request.PurchaseAmount * ingredient.Amount;
                 remaining -= buyCost;
-                balance["AU"] -= buyCost;
-                changedCurrencies.Add(new FYCurrencyItem { CurrencyName = "Aurum", Amount = balance["AU"] });
+                balance.HardCurrency -= buyCost;
+                changedCurrencies.Add(new FYCurrencyItem { CurrencyName = "Aurum", Amount = balance.HardCurrency });
             } else {
-                for (var i = 0; i < inventory.Count; i++) {
-                    var item = inventory[i];
+                foreach (var item in inventory) {
                     if (item.BaseItemId != ingredient.Currency) {
                         continue;
                     }
@@ -209,6 +209,7 @@ public class PurchaseWeaponShopItemFunction : ICloudScriptFunction<PurchaseWeapo
             }
         }
 
+        // TODO: Inventory limit check
         // TODO: Refactor into a helper function
         var remainingAmount = request.PurchaseAmount * blueprintData.AmountPerPurchase;
 

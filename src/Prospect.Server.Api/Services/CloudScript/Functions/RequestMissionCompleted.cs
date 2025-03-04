@@ -1,5 +1,6 @@
 ﻿using System.Text.Json;
 using System.Text.Json.Serialization;
+using Prospect.Server.Api.Models.Data;
 using Prospect.Server.Api.Services.Auth.Extensions;
 using Prospect.Server.Api.Services.UserData;
 
@@ -54,7 +55,7 @@ public class RequestMissionCompleted : ICloudScriptFunction<FYRequestMissionComp
         var rewards = JsonSerializer.Deserialize<Dictionary<string, TitleDataMissionRewardInfo>>(titleData["OnboardingRewardMissions"]);
         var blueprints = JsonSerializer.Deserialize<Dictionary<string, TitleDataBlueprintInfo>>(titleData["Blueprints"]);
         var missions = JsonSerializer.Deserialize<Dictionary<string, TitleDataMissionInfo>>(titleData["OnboardingMissions"]);
-        var balance = JsonSerializer.Deserialize<Dictionary<string, int>>(userData["Balance"].Value);
+        var balance = JsonSerializer.Deserialize<PlayerBalance>(userData["Balance"].Value);
 
         var currentMission = missions[onboardingMission.CurrentMissionID];
         var missionRewardId = currentMission.OnboardingRewards.RowName;
@@ -68,15 +69,16 @@ public class RequestMissionCompleted : ICloudScriptFunction<FYRequestMissionComp
             var missionRewards = rewards[missionRewardId].RewardEntries;
             foreach (var reward in missionRewards) {
                 if (reward.RewardRowHandle.RowName == "SoftCurrency") {
-                    balance["SC"] += reward.RewardAmount;
-                    changedCurrencies.Add(new FYCurrencyItem { CurrencyName = "SoftCurrency", Amount = balance["SC"] });
+                    balance.SoftCurrency += reward.RewardAmount;
+                    changedCurrencies.Add(new FYCurrencyItem { CurrencyName = "SoftCurrency", Amount = balance.SoftCurrency });
                 } else if (reward.RewardRowHandle.RowName == "Aurum") {
-                    balance["AU"] += reward.RewardAmount;
-                    changedCurrencies.Add(new FYCurrencyItem { CurrencyName = "Aurum", Amount = balance["AU"] });
+                    balance.HardCurrency += reward.RewardAmount;
+                    changedCurrencies.Add(new FYCurrencyItem { CurrencyName = "Aurum", Amount = balance.HardCurrency });
                 } else if (reward.RewardRowHandle.RowName == "InsuranceToken") {
-                    balance["IN"] += reward.RewardAmount;
-                    changedCurrencies.Add(new FYCurrencyItem { CurrencyName = "InsuranceToken", Amount = balance["IN"] });
+                    balance.InsuranceTokens += reward.RewardAmount;
+                    changedCurrencies.Add(new FYCurrencyItem { CurrencyName = "InsuranceToken", Amount = balance.InsuranceTokens });
                 } else {
+                    // TODO: Inventory limit check
                     var blueprintData = blueprints[reward.RewardRowHandle.RowName];
                     var remainingAmount = reward.RewardAmount * blueprintData.AmountPerPurchase;
                     while (remainingAmount > 0) {

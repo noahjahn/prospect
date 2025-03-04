@@ -1,5 +1,6 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Prospect.Server.Api.Models.Data;
 using Prospect.Server.Api.Services.Auth.Extensions;
 using Prospect.Server.Api.Services.CloudScript;
 using Prospect.Server.Api.Services.UserData;
@@ -33,7 +34,7 @@ public class SellItemsClientResponse
     [JsonPropertyName("scrappedItemIds")]
     public HashSet<string> ScrappedItemIDs { get; set; }
     [JsonPropertyName("changedItems")]
-    public FYCustomItemInfo[] ChangedItems { get; set; }
+    public List<FYCustomItemInfo> ChangedItems { get; set; }
     [JsonPropertyName("changedCurrencies")]
     public FYCurrencyItem[] ChangedCurrencies { get; set; }
     [JsonPropertyName("playerFactionProgressionData")]
@@ -71,39 +72,63 @@ public class SellItemsClientFunction : ICloudScriptFunction<SellItemsClientReque
             throw new CloudScriptException("CloudScript was not called within a http request");
         }
         var userId = context.User.FindAuthUserId();
-        var progressionFactionKey = "FactionProgression" + request.FactionID;
+        var progressionFactionKey = $"FactionProgression{request.FactionID}";
 
         var userData = await _userDataService.FindAsync(userId, userId, new List<string>{"Inventory", "Balance", progressionFactionKey});
         var inventory = JsonSerializer.Deserialize<List<FYCustomItemInfo>>(userData["Inventory"].Value);
-        var balanceData = JsonSerializer.Deserialize<Dictionary<string, int>>(userData["Balance"].Value);
+        var balance = JsonSerializer.Deserialize<PlayerBalance>(userData["Balance"].Value);
         var factionProgression = JsonSerializer.Deserialize<int>(userData[progressionFactionKey].Value);
+
         var blueprintsData = _titleDataService.Find(new List<string>{"Blueprints"});
         var blueprints = JsonSerializer.Deserialize<Dictionary<string, TitleDataBlueprintInfo>>(blueprintsData["Blueprints"]);
 
-        var playerBalance = balanceData["SC"];
-        HashSet<string> scrappedItemIds = [];
-        foreach (var itemId in request.IDs) {
-            var inventoryItemIdx = inventory.FindIndex(i => i.ItemId == itemId);
-            if (inventoryItemIdx == -1) {
+        // TODO: Optimize
+        // TODO: Check deleted items to see if other stacks/mods were updated correctly
+        // Process inventory update before selling since a player may split item stack.
+        // This will result in creating a new item and updating amount of existing item.
+        // NOTE: Stacking items back doesn't seem to work, at least in single-player station. Bug?
+        // var newInventory = new List<FYCustomItemInfo>(inventory.Count);
+        // foreach (var item in inventory) {
+        //     if (!request.InventoryUpdateData.ItemsToRemove.Contains(item.ItemId)) {
+        //         newInventory.Add(item);
+        //     }
+        // }
+
+        var changedItems = new List<FYCustomItemInfo>();
+        foreach (var item in request.InventoryUpdateData.ItemsToUpdateAmount) {
+            var inventoryItem = inventory.Find(i => i.ItemId == item.ItemId);
+            if (inventoryItem == null) {
                 continue;
             }
-            var inventoryItem = inventory[inventoryItemIdx];
+            inventoryItem.Amount = item.Amount;
+            // NOTE: Vanity and mod data cannot be managed in sell menu
+            changedItems.Add(item);
+        }
+
+        foreach (var item in request.InventoryUpdateData.ItemsToAdd) {
+            inventory.Add(item);
+        }
+
+        // Then process selling. The game client provides item IDs for newly added items.
+        HashSet<string> scrappedItemIds = [];
+        foreach (var itemId in request.IDs) {
+            var inventoryItem = inventory.Find(i => i.ItemId == itemId);
+            if (inventoryItem == null) {
+                continue;
+            }
             var blueprintData = blueprints[inventoryItem.BaseItemId];
             // TODO: Probably better to decide based on item kind instead
             if (inventoryItem.Durability == -1) {
-                factionProgression += blueprintData.OverrideScrappingReputation * inventoryItem.Amount;
-                playerBalance += blueprintData.OverrideScrappingReturns * inventoryItem.Amount;
+                factionProgression += (int)((float)blueprintData.OverrideScrappingReputation / blueprintData.MaxAmountPerStack * inventoryItem.Amount);
+                balance.SoftCurrency += (int)((float)blueprintData.OverrideScrappingReturns / blueprintData.MaxAmountPerStack * inventoryItem.Amount);
             } else {
-                // Items that have durability are not stackable so it's always 1 item
-                factionProgression += MapValue.Map(
-                    inventoryItem.Durability,
-                    blueprintData.DurabilityMax, 0,
-                    blueprintData.OverrideScrappingReputation, (int)(blueprintData.OverrideScrappingReputation * blueprintData.DurabilityBrokenScrappingReturnModifier)
+                factionProgression += (int)Math.Max(
+                    (float)inventoryItem.Durability / blueprintData.DurabilityMax * blueprintData.OverrideScrappingReputation,
+                    blueprintData.OverrideScrappingReputation * blueprintData.DurabilityBrokenScrappingReturnModifier
                 );
-                playerBalance += MapValue.Map(
-                    inventoryItem.Durability,
-                    blueprintData.DurabilityMax, 0,
-                    blueprintData.OverrideScrappingReturns, (int)(blueprintData.OverrideScrappingReturns * blueprintData.DurabilityBrokenScrappingReturnModifier)
+                balance.SoftCurrency += (int)Math.Max(
+                    (float)inventoryItem.Durability / blueprintData.DurabilityMax * blueprintData.OverrideScrappingReturns,
+                    blueprintData.OverrideScrappingReturns * blueprintData.DurabilityBrokenScrappingReturnModifier
                 );
             }
 
@@ -118,13 +143,11 @@ public class SellItemsClientFunction : ICloudScriptFunction<SellItemsClientReque
             }
         }
 
-        balanceData["SC"] = playerBalance;
-
         await _userDataService.UpdateAsync(
             userId, userId,
             new Dictionary<string, string>{
                 ["Inventory"] = JsonSerializer.Serialize(newInventory),
-                ["Balance"] = JsonSerializer.Serialize(balanceData),
+                ["Balance"] = JsonSerializer.Serialize(balance),
                 [progressionFactionKey] = JsonSerializer.Serialize(factionProgression),
             }
         );
@@ -135,14 +158,14 @@ public class SellItemsClientFunction : ICloudScriptFunction<SellItemsClientReque
             Error = "",
             ChangedCurrencies = [new FYCurrencyItem {
                 CurrencyName = "SoftCurrency",
-                Amount = playerBalance,
+                Amount = balance.SoftCurrency,
             }],
             PlayerFactionProgressionData = new FYPlayerFactionProgressData {
                 FactionID = request.FactionID,
                 CurrentProgression = factionProgression,
             },
             ScrappedItemIDs = scrappedItemIds,
-            ChangedItems = [], // TODO: Changed items from InventoryUpdateData
+            ChangedItems = changedItems,
         };
     }
 }

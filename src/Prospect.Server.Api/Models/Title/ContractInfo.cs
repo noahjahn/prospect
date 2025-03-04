@@ -15,6 +15,8 @@ public class TitleDataContractInfo {
     public TitleDataContractInfoUnlockData UnlockData { get; set; }
     [JsonPropertyName("IsMainContract")]
     public bool IsMainContract { get; set; }
+    [JsonPropertyName("ContractDifficulty")]
+    public EYContractDifficulty ContractDifficulty { get; set; }
 }
 
 public class TitleDataContractInfoReward {
@@ -26,7 +28,7 @@ public class TitleDataContractInfoReward {
 
 public class TitleDataContractInfoObjective {
     [JsonPropertyName("Type")]
-    public int Type { get; set; }
+    public EYContractObjectiveType Type { get; set; }
     [JsonPropertyName("MaxProgress")]
     public int MaxProgress { get; set; }
     [JsonPropertyName("ItemToOwn")]
@@ -37,5 +39,26 @@ public class TitleDataContractInfoUnlockData {
     [JsonPropertyName("Level")]
     public int Level { get; set; }
     [JsonPropertyName("Contracts")]
-    public string[] Contracts { get; set; }
+    public HashSet<string> Contracts { get; set; }
 }
+
+public enum EYContractObjectiveType {
+	Invalid = 0,
+	Kills = 1,
+	OwnNumOfItem = 2,
+	DeadDrop = 3,
+	VisitArea = 4,
+    LootContainer = 5,
+    FactionLevel = 6,
+    CompletedMission = 7,
+	MAX = 8
+}
+
+public enum EYContractDifficulty
+{
+	Invalid  = 0,
+	Easy     = 1,
+	Medium   = 2,
+	Hard     = 3,
+	MAX      = 4
+};

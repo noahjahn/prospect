@@ -76,6 +76,12 @@ public class RequestUpdateStationInventoryFunction : ICloudScriptFunction<Reques
         var inventory = JsonSerializer.Deserialize<List<FYCustomItemInfo>>(userData["Inventory"].Value);
 
         // TODO: Optimize
+        // TODO: Check deleted items to see if other stacks/mods were updated correctly
+        // Process inventory update. The player may:
+        // 1. Split item stack - creates a new item and updates amount of existing item.
+        // 2. Stack existing items - deletes existing items and updates amount of existing item.
+        // 3. Change vanity data - updates an existing item.
+        // 4. Change weapon mods - updates an existing item.
         var newInventory = new List<FYCustomItemInfo>(inventory.Count);
         foreach (var item in inventory) {
             if (!request.ItemsToRemove.Contains(item.ItemId)) {
@@ -83,7 +89,6 @@ public class RequestUpdateStationInventoryFunction : ICloudScriptFunction<Reques
             }
         }
 
-        // TODO: Check deleted items to see if other stacks/mods were updated correctly
         foreach (var item in request.ItemsToUpdateAmount) {
             var inventoryItem = newInventory.Find(i => i.ItemId == item.ItemId);
             if (inventoryItem == null) {

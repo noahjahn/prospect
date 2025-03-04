@@ -9,9 +9,9 @@ public class RequestUpdateSeasonWipeDataRequest
 public class RequestUpdateSeasonWipeDataResponse
 {
     [JsonPropertyName("userId")]
-	public string UserId;
+	public string UserId { get; set; }
     [JsonPropertyName("error")]
-	public string Error;
+	public string Error { get; set; }
 }
 
 [CloudScriptFunction("RequestUpdateSeasonWipeData")]

@@ -1,5 +1,6 @@
 ﻿using System.Text.Json;
 using System.Text.Json.Serialization;
+using Prospect.Server.Api.Models.Data;
 using Prospect.Server.Api.Services.Auth.Extensions;
 using Prospect.Server.Api.Services.UserData;
 using Prospect.Server.Api.Utils;
@@ -56,7 +57,7 @@ public class SkipTechTreeNodeUpgradeClient : ICloudScriptFunction<FYSkipTechTree
             new List<string>{"TechTreeNodeData", "Balance", "CharacterTechTreeBonuses"}
         );
 
-        var balance = JsonSerializer.Deserialize<Dictionary<string, int>>(userData["Balance"].Value);
+        var balance = JsonSerializer.Deserialize<PlayerBalance>(userData["Balance"].Value);
         var userTechTree = JsonSerializer.Deserialize<UserTechTreeNodeData>(userData["TechTreeNodeData"].Value);
 
         var currentNode = userTechTree.NodeInProgress;
@@ -81,24 +82,24 @@ public class SkipTechTreeNodeUpgradeClient : ICloudScriptFunction<FYSkipTechTree
         FYCurrencyItem[] changedCurrency;
         if (request.UseOptionalCosts) {
             var remaining = MapValue.Map(now, craftStartTime, craftEndTime, nodeLevelInfo.OptionalRushCosts, 1);
-            if (balance["SC"] < remaining) {
+            if (balance.SoftCurrency < remaining) {
                 return new FYSkipTechTreeNodeUpgradeClientResult {
                     UserID = userId,
                     Error = "Insufficient balance",
                 };
             }
-            balance["SC"] -= remaining;
-            changedCurrency = [new FYCurrencyItem { CurrencyName = "SoftCurrency", Amount = balance["SC"] }];
+            balance.SoftCurrency -= remaining;
+            changedCurrency = [new FYCurrencyItem { CurrencyName = "SoftCurrency", Amount = balance.SoftCurrency }];
         } else {
             var remaining = MapValue.Map(now, craftStartTime, craftEndTime, nodeLevelInfo.InitialRushCosts, 1);
-            if (balance["AU"] < remaining) {
+            if (balance.HardCurrency < remaining) {
                 return new FYSkipTechTreeNodeUpgradeClientResult {
                     UserID = userId,
                     Error = "Insufficient balance",
                 };
             }
-            balance["AU"] -= remaining;
-            changedCurrency = [new FYCurrencyItem { CurrencyName = "Aurum", Amount = balance["AU"] }];
+            balance.HardCurrency -= remaining;
+            changedCurrency = [new FYCurrencyItem { CurrencyName = "Aurum", Amount = balance.HardCurrency }];
         }
 
         userTechTree.TotalUpgrades++;

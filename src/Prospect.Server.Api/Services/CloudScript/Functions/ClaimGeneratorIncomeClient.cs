@@ -1,5 +1,6 @@
 ﻿using System.Text.Json;
 using System.Text.Json.Serialization;
+using Prospect.Server.Api.Models.Data;
 using Prospect.Server.Api.Services.Auth.Extensions;
 using Prospect.Server.Api.Services.CloudScript.Models.Data;
 using Prospect.Server.Api.Services.UserData;
@@ -103,7 +104,7 @@ public class ClaimGeneratorIncomeClient : ICloudScriptFunction<FYClaimGeneratorI
             };
         }
 
-        var balance = JsonSerializer.Deserialize<Dictionary<string, int>>(userData["Balance"].Value);
+        var balance = JsonSerializer.Deserialize<PlayerBalance>(userData["Balance"].Value);
         var inventory = JsonSerializer.Deserialize<List<FYCustomItemInfo>>(userData["Inventory"].Value);
         var techTreeBonuses = JsonSerializer.Deserialize<CharacterTechTreeBonuses>(userData["CharacterTechTreeBonuses"].Value);
 
@@ -136,8 +137,8 @@ public class ClaimGeneratorIncomeClient : ICloudScriptFunction<FYClaimGeneratorI
                     };
                 }
 
-                balance["SC"] += claimableAmount;
-                changedCurrencies = [new FYCurrencyItem { CurrencyName = "SoftCurrency", Amount = balance["SC"] }];
+                balance.SoftCurrency += claimableAmount;
+                changedCurrencies = [new FYCurrencyItem { CurrencyName = "SoftCurrency", Amount = balance.SoftCurrency }];
                 break;
             }
             case "playerquarters_gen_aurum": {
@@ -162,8 +163,8 @@ public class ClaimGeneratorIncomeClient : ICloudScriptFunction<FYClaimGeneratorI
                     };
                 }
 
-                balance["AU"] += claimableAmount;
-                changedCurrencies = [new FYCurrencyItem { CurrencyName = "Aurum", Amount = balance["AU"] }];
+                balance.HardCurrency += claimableAmount;
+                changedCurrencies = [new FYCurrencyItem { CurrencyName = "Aurum", Amount = balance.HardCurrency }];
                 break;
             }
             case "playerquarters_gen_crate": {
@@ -190,7 +191,8 @@ public class ClaimGeneratorIncomeClient : ICloudScriptFunction<FYClaimGeneratorI
                 var blueprints = JsonSerializer.Deserialize<Dictionary<string, TitleDataBlueprintInfo>>(titleData["Blueprints"]);
                 var rewardsPool = dailyCrateRewards[crateTier - 1];
 
-                var items = PickItems(rewardsPool, 5); // TODO: Not sure how many items were granted
+                // TODO: Get rewardGrants from PassiveGenerators_CrateRewards_DT
+                var items = PickItems(rewardsPool, 5);
                 // TODO: Stackable? GrantedItems doesn't imply granted OR updated.
                 foreach (var item in items) {
                     var itemInfo = blueprints[item.Name];

@@ -47,10 +47,18 @@ public class SetCharacterVanityArchetype : ICloudScriptFunction<FYSetActiveChara
         var genderSuffix = request.ArcheTypeId.EndsWith("G02") ? "M" : "F";
         returnVanity.ArchetypeID = request.ArcheTypeId;
         returnVanity.HeadItem.ID = request.ArcheTypeId + "_Head01";
-        returnVanity.BootsItem.ID = "StarterOutfit01_Boots_" + genderSuffix;
-        returnVanity.ChestItem.ID = "StarterOutfit01_Chest_" + genderSuffix;
-        returnVanity.GloveItem.ID = "StarterOutfit01_Gloves_" + genderSuffix;
-        returnVanity.BaseSuitItem.ID = "StarterOutfit01" + genderSuffix + "_BaseSuit";
+#if SEASON_2_RELEASE || SEASON_2_DEBUG
+        returnVanity.BootsItem.ID = $"StarterOutfit01_Boots_{genderSuffix}";
+        returnVanity.ChestItem.ID = $"StarterOutfit01_Chest_{genderSuffix}";
+        returnVanity.GloveItem.ID = $"StarterOutfit01_Gloves_{genderSuffix}";
+#elif SEASON_3_RELEASE || SEASON_3_DEBUG
+        returnVanity.BootsItem.ID = "StarterOutfit01_Boots";
+        returnVanity.ChestItem.ID = "StarterOutfit01_Chest";
+        returnVanity.GloveItem.ID = "StarterOutfit01_Gloves";
+#else
+#error Unsupported build type
+#endif
+        returnVanity.BaseSuitItem.ID = $"StarterOutfit01{genderSuffix}_BaseSuit";
         returnVanity.BodyType = request.ArcheTypeId.EndsWith("G02") ? 1 : 2;
         await _userDataService.UpdateAsync(
             userId, userId,

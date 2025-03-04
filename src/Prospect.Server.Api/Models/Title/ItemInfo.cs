@@ -28,11 +28,11 @@ public class TitleDataBlueprintInfo {
     [JsonPropertyName("ScrappingFactionProgressionIncrement")]
     public int ScrappingFactionProgressionIncrement { get; set; }
 	[JsonPropertyName("UnlockData")]
-    public object UnlockData { get; set; }
+    public TitleDataItemUnlockData UnlockData { get; set; }
 	[JsonPropertyName("ModID")]
     public int? ModID { get; set; }
 	[JsonPropertyName("AlienForgeCatalystToUpgradedItemMap")]
-    public object? AlienForgeCatalystToUpgradedItemMap { get; set; }
+    public TitleDataItemAlienForgeCatalystToUpgradedItemMap AlienForgeCatalystToUpgradedItemMap { get; set; }
     [JsonPropertyName("Rarity")]
     public int Rarity { get; set; }
     [JsonPropertyName("Kind")]
@@ -59,6 +59,22 @@ public class TitleDataItemRecipeCostType {
     public string Currency { get; set; }
     [JsonPropertyName("Amount")]
     public int Amount { get; set; }
+}
+
+public class TitleDataItemUnlockData {
+    [JsonPropertyName("FactionUnlockLevel")]
+    public int FactionUnlockLevel { get; set; }
+    [JsonPropertyName("ContractLockPurchase")]
+    public string ContractLockPurchase { get; set; }
+	[JsonPropertyName("ContractLockCrafting")]
+    public string ContractLockCrafting { get; set; }
+}
+
+public class TitleDataItemAlienForgeCatalystToUpgradedItemMap {
+	[JsonPropertyName("Catalyst")]
+    public string Catalyst { get; set; }
+    [JsonPropertyName("NextItem")]
+    public string NextItem { get; set; }
 }
 
 /*

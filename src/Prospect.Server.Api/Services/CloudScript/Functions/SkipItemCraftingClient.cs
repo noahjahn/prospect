@@ -1,8 +1,7 @@
 ﻿using System.Text.Json;
 using System.Text.Json.Serialization;
+using Prospect.Server.Api.Models.Data;
 using Prospect.Server.Api.Services.Auth.Extensions;
-using Prospect.Server.Api.Services.CloudScript.Models;
-using Prospect.Server.Api.Services.CloudScript.Models.Data;
 using Prospect.Server.Api.Services.UserData;
 using Prospect.Server.Api.Utils;
 
@@ -61,7 +60,7 @@ public class SkipItemCraftingClient : ICloudScriptFunction<FYSkipItemCraftingCli
             new List<string>{"CraftingTimer__2022_05_12", "Balance", "Inventory"}
         );
 
-        var balance = JsonSerializer.Deserialize<Dictionary<string, int>>(userData["Balance"].Value);
+        var balance = JsonSerializer.Deserialize<PlayerBalance>(userData["Balance"].Value);
         var inventory = JsonSerializer.Deserialize<List<FYCustomItemInfo>>(userData["Inventory"].Value);
         var craftingTimer = JsonSerializer.Deserialize<FYItemCurrentlyBeingCrafted>(userData["CraftingTimer__2022_05_12"].Value);
 
@@ -78,24 +77,24 @@ public class SkipItemCraftingClient : ICloudScriptFunction<FYSkipItemCraftingCli
         FYCurrencyItem[] changedCurrency;
         if (request.UseOptionalCosts) {
             var remaining = MapValue.Map(now, craftStartTime, craftEndTime, shopCraftingData.SkipOptionalCraftingMaxCost, 1);
-            if (balance["SC"] < remaining) {
+            if (balance.SoftCurrency < remaining) {
                 return new FYSkipItemCraftingClientResult {
                     UserID = userId,
                     Error = "Insufficient balance",
                 };
             }
-            balance["SC"] -= remaining;
-            changedCurrency = [new FYCurrencyItem { CurrencyName = "SoftCurrency", Amount = balance["SC"] }];
+            balance.SoftCurrency -= remaining;
+            changedCurrency = [new FYCurrencyItem { CurrencyName = "SoftCurrency", Amount = balance.SoftCurrency }];
         } else {
             var remaining = MapValue.Map(now, craftStartTime, craftEndTime, shopCraftingData.SkipCraftingMaxCost, 1);
-            if (balance["AU"] < remaining) {
+            if (balance.HardCurrency < remaining) {
                 return new FYSkipItemCraftingClientResult {
                     UserID = userId,
                     Error = "Insufficient balance",
                 };
             }
-            balance["AU"] -= remaining;
-            changedCurrency = [new FYCurrencyItem { CurrencyName = "Aurum", Amount = balance["AU"] }];
+            balance.HardCurrency -= remaining;
+            changedCurrency = [new FYCurrencyItem { CurrencyName = "Aurum", Amount = balance.HardCurrency }];
         }
 
         List<FYCustomItemInfo> itemsGrantedOrUpdated = [];

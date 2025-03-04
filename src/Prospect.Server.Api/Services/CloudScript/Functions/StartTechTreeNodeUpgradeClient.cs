@@ -1,5 +1,6 @@
 ﻿using System.Text.Json;
 using System.Text.Json.Serialization;
+using Prospect.Server.Api.Models.Data;
 using Prospect.Server.Api.Services.Auth.Extensions;
 using Prospect.Server.Api.Services.CloudScript.Models.Data;
 using Prospect.Server.Api.Services.UserData;
@@ -67,7 +68,7 @@ public class StartTechTreeNodeUpgradeClient : ICloudScriptFunction<FYStartTechTr
             };
         }
 
-        var balance = JsonSerializer.Deserialize<Dictionary<string, int>>(userData["Balance"].Value);
+        var balance = JsonSerializer.Deserialize<PlayerBalance>(userData["Balance"].Value);
         var inventory = JsonSerializer.Deserialize<List<FYCustomItemInfo>>(userData["Inventory"].Value);
 
         var titleData = _titleDataService.Find(new List<string>{"TechTreeNodes"});
@@ -89,15 +90,14 @@ public class StartTechTreeNodeUpgradeClient : ICloudScriptFunction<FYStartTechTr
             int remaining = ingredient.Amount;
             if (ingredient.Currency == "SoftCurrency") {
                 remaining -= ingredient.Amount;
-                balance["SC"] -= ingredient.Amount;
-                changedCurrencies.Add(new FYCurrencyItem { CurrencyName = "SoftCurrency", Amount = balance["SC"] });
+                balance.SoftCurrency -= ingredient.Amount;
+                changedCurrencies.Add(new FYCurrencyItem { CurrencyName = "SoftCurrency", Amount = balance.SoftCurrency });
             } else if (ingredient.Currency == "Aurum") {
                 remaining -= ingredient.Amount;
-                balance["AU"] -= ingredient.Amount;
-                changedCurrencies.Add(new FYCurrencyItem { CurrencyName = "Aurum", Amount = balance["AU"] });
+                balance.HardCurrency -= ingredient.Amount;
+                changedCurrencies.Add(new FYCurrencyItem { CurrencyName = "Aurum", Amount = balance.HardCurrency });
             } else {
-                for (var i = 0; i < inventory.Count; i++) {
-                    var item = inventory[i];
+                foreach (var item in inventory) {
                     if (item.BaseItemId != ingredient.Currency) {
                         continue;
                     }

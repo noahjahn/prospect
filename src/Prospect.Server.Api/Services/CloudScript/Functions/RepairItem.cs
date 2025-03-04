@@ -1,5 +1,6 @@
 ﻿using System.Text.Json;
 using System.Text.Json.Serialization;
+using Prospect.Server.Api.Models.Data;
 using Prospect.Server.Api.Services.Auth.Extensions;
 using Prospect.Server.Api.Services.UserData;
 using Prospect.Server.Api.Utils;
@@ -65,20 +66,20 @@ public class RepairItem : ICloudScriptFunction<FYRepairItemRequest, FYRepairItem
         var blueprints = JsonSerializer.Deserialize<Dictionary<string, TitleDataBlueprintInfo>>(titleData["Blueprints"]);
         var blueprintData = blueprints[item.BaseItemId];
 
-        var balance = JsonSerializer.Deserialize<Dictionary<string, int>>(userData["Balance"].Value);
+        var balance = JsonSerializer.Deserialize<PlayerBalance>(userData["Balance"].Value);
 
-        var repairCost = MapValue.Map(item.Durability, blueprintData.DurabilityMax, 0, blueprintData.RepairCostBase, blueprintData.RepairCostMaxDurability);
+        var repairCost = blueprintData.RepairCostBase + (int)Math.Ceiling((1 - (float)item.Durability / blueprintData.DurabilityMax) * blueprintData.RepairCostMaxDurability);
         if (item.Durability == 0) {
             repairCost += blueprintData.RepairCostModifierBroken;
         }
-        if (balance["SC"] < repairCost) {
+        if (balance.SoftCurrency < repairCost) {
             return new FYRepairItemResult
             {
                 UserID = userId,
                 Error = "Insufficient balance",
             };
         }
-        balance["SC"] -= repairCost;
+        balance.SoftCurrency -= repairCost;
         item.Durability = blueprintData.DurabilityMax;
 
         await _userDataService.UpdateAsync(
@@ -95,7 +96,7 @@ public class RepairItem : ICloudScriptFunction<FYRepairItemRequest, FYRepairItem
             Error = "",
             ChangedItems = [item],
             ChangedCurrencies = [
-                new FYCurrencyItem { CurrencyName = "SoftCurrency", Amount = balance["SC"] },
+                new FYCurrencyItem { CurrencyName = "SoftCurrency", Amount = balance.SoftCurrency },
             ],
         };
     }

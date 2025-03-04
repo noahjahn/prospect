@@ -1,5 +1,6 @@
 ﻿using System.Text.Json;
 using System.Text.Json.Serialization;
+using Prospect.Server.Api.Models.Data;
 using Prospect.Server.Api.Services.Auth.Extensions;
 using Prospect.Server.Api.Services.CloudScript.Models.Data;
 using Prospect.Server.Api.Services.UserData;
@@ -69,7 +70,7 @@ public class SkipPlayerQuarterUpgradeClient : ICloudScriptFunction<FYSkipPlayerQ
         }
 
         var titleData = _titleDataService.Find(new List<string>{"PlayerQuarters"});
-        var balance = JsonSerializer.Deserialize<Dictionary<string, int>>(userData["Balance"].Value);
+        var balance = JsonSerializer.Deserialize<PlayerBalance>(userData["Balance"].Value);
         var playerQuartersData = JsonSerializer.Deserialize<TitleDataPlayerQuartersInfo[]>(titleData["PlayerQuarters"]);
         var nextQuartersLevel = playerQuartersData[userPlayerQuarters.Level - 1]; // Quarters level starts from 1
 
@@ -79,24 +80,24 @@ public class SkipPlayerQuarterUpgradeClient : ICloudScriptFunction<FYSkipPlayerQ
         FYCurrencyItem[] changedCurrency;
         if (request.UseOptionalCosts) {
             var remaining = MapValue.Map(now, craftStartTime, craftEndTime, nextQuartersLevel.OptionalRushCosts, 1);
-            if (balance["SC"] < remaining) {
+            if (balance.SoftCurrency < remaining) {
                 return new FYSkipPlayerQuarterUpgradeClientResult {
                     UserID = userId,
                     Error = "Insufficient balance",
                 };
             }
-            balance["SC"] -= remaining;
-            changedCurrency = [new FYCurrencyItem { CurrencyName = "SoftCurrency", Amount = balance["SC"] }];
+            balance.SoftCurrency -= remaining;
+            changedCurrency = [new FYCurrencyItem { CurrencyName = "SoftCurrency", Amount = balance.SoftCurrency }];
         } else {
             var remaining = MapValue.Map(now, craftStartTime, craftEndTime, nextQuartersLevel.InitialRushCosts, 1);
-            if (balance["AU"] < remaining) {
+            if (balance.HardCurrency < remaining) {
                 return new FYSkipPlayerQuarterUpgradeClientResult {
                     UserID = userId,
                     Error = "Insufficient balance",
                 };
             }
-            balance["AU"] -= remaining;
-            changedCurrency = [new FYCurrencyItem { CurrencyName = "Aurum", Amount = balance["AU"] }];
+            balance.HardCurrency -= remaining;
+            changedCurrency = [new FYCurrencyItem { CurrencyName = "Aurum", Amount = balance.HardCurrency }];
         }
 
         var upgradeStartedTime = new FYTimestamp {

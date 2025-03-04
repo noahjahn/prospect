@@ -6,6 +6,7 @@ using Microsoft.Extensions.Options;
 using Prospect.Server.Api.Config;
 using Prospect.Server.Api.Models.Client;
 using Prospect.Server.Api.Models.Client.Data;
+using Prospect.Server.Api.Models.Data;
 using Prospect.Server.Api.Services.Auth;
 using Prospect.Server.Api.Services.Auth.Extensions;
 using Prospect.Server.Api.Services.Auth.User;
@@ -296,7 +297,7 @@ public class ClientController : Controller
             Data = new FGetUserInventoryResult
             {
                 Inventory = items,
-                VirtualCurrency = JsonSerializer.Deserialize<Dictionary<string, int>>(userData["Balance"].Value),
+                VirtualCurrency = JsonSerializer.Deserialize<PlayerBalance>(userData["Balance"].Value),
                 VirtualCurrencyRechargeTimes = new Dictionary<string, FVirtualCurrencyRechargeTime>()
             }
         });

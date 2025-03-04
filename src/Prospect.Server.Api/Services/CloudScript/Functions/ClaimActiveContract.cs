@@ -1,5 +1,6 @@
 ﻿using System.Text.Json;
 using System.Text.Json.Serialization;
+using Prospect.Server.Api.Models.Data;
 using Prospect.Server.Api.Services.Auth.Extensions;
 using Prospect.Server.Api.Services.CloudScript.Models.Data;
 using Prospect.Server.Api.Services.UserData;
@@ -87,7 +88,7 @@ public class ClaimActiveContract : ICloudScriptFunction<FYClaimCompletedActiveCo
         var factionProgression = JsonSerializer.Deserialize<int>(userData[factionKey].Value);
         var contractsActive = JsonSerializer.Deserialize<FYGetActiveContractsResult>(userData["ContractsActive"].Value);
         var contractsCompleted = JsonSerializer.Deserialize<FYGetCompletedContractsResult>(userData["ContractsOneTimeCompleted"].Value);
-        var balance = JsonSerializer.Deserialize<Dictionary<string, int>>(userData["Balance"].Value);
+        var balance = JsonSerializer.Deserialize<PlayerBalance>(userData["Balance"].Value);
         var inventory = JsonSerializer.Deserialize<List<FYCustomItemInfo>>(userData["Inventory"].Value);
 
         var targetContractIdx = contractsActive.Contracts.FindIndex(item => item.ContractID == request.ContractID);
@@ -102,14 +103,16 @@ public class ClaimActiveContract : ICloudScriptFunction<FYClaimCompletedActiveCo
 
         var blueprints = JsonSerializer.Deserialize<Dictionary<string, TitleDataBlueprintInfo>>(titleData["Blueprints"]);
 
+        var targetContract = contractsActive.Contracts[targetContractIdx];
         List<FYCustomItemInfo> itemsUpdatedOrRemoved = [];
         HashSet<string> deletedItemsIds = [];
-        // TODO: Proper progress verification of all objectives
-        foreach (var objective in contract.Objectives) {
+        for (var i = 0; i < contract.Objectives.Length; i++) {
+            var objective = contract.Objectives[i];
             int remaining = objective.MaxProgress;
-            if (objective.Type == 2) {
-                for (var i = 0; i < inventory.Count; i++) {
-                    var item = inventory[i];
+            if (objective.Type == EYContractObjectiveType.OwnNumOfItem) {
+                // NOTE: The backend may perform item ownership validation
+                // since it has the information about the player's items.
+                foreach (var item in inventory) {
                     if (item.BaseItemId != objective.ItemToOwn) {
                         continue;
                     }
@@ -125,6 +128,11 @@ public class ClaimActiveContract : ICloudScriptFunction<FYClaimCompletedActiveCo
                         break;
                     }
                 }
+            } else {
+                // NOTE: A game server must write the correct progress
+                // for other types of objectives.
+                // The objectives are mapped by array index.
+                remaining -= targetContract.Progress[i];
             }
             if (remaining > 0) {
                 return new FYClaimCompletedActiveContractRewardsResult
@@ -148,15 +156,17 @@ public class ClaimActiveContract : ICloudScriptFunction<FYClaimCompletedActiveCo
         List<FYCurrencyItem> changedCurrencies = [];
         foreach (var reward in contract.Rewards) {
             if (reward.ItemID == "SoftCurrency") {
-                balance["SC"] += reward.Amount;
-                changedCurrencies.Add(new FYCurrencyItem { CurrencyName = "SoftCurrency", Amount = balance["SC"] });
+                balance.SoftCurrency += reward.Amount;
+                changedCurrencies.Add(new FYCurrencyItem { CurrencyName = "SoftCurrency", Amount = balance.SoftCurrency });
             } else if (reward.ItemID == "Aurum") {
-                balance["AU"] += reward.Amount;
-                changedCurrencies.Add(new FYCurrencyItem { CurrencyName = "Aurum", Amount = balance["AU"] });
+                balance.HardCurrency += reward.Amount;
+                changedCurrencies.Add(new FYCurrencyItem { CurrencyName = "Aurum", Amount = balance.HardCurrency });
             } else if (reward.ItemID == "InsuranceToken") {
-                balance["IN"] += reward.Amount;
-                changedCurrencies.Add(new FYCurrencyItem { CurrencyName = "InsuranceToken", Amount = balance["IN"] });
+                balance.InsuranceTokens += reward.Amount;
+                changedCurrencies.Add(new FYCurrencyItem { CurrencyName = "InsuranceToken", Amount = balance.InsuranceTokens });
             } else {
+                // TODO: Inventory limit check
+
                 var blueprintData = blueprints[reward.ItemID];
                 var remainingAmount = reward.Amount * blueprintData.AmountPerPurchase;
 

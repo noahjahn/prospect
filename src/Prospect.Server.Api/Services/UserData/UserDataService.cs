@@ -1,6 +1,7 @@
 ﻿using System.Text.Json;
 using System.Text.Json.Serialization;
 using Prospect.Server.Api.Models.Client.Data;
+using Prospect.Server.Api.Services.CloudScript.Functions;
 using Prospect.Server.Api.Services.Database;
 
 namespace Prospect.Server.Api.Services.UserData;
@@ -70,6 +71,54 @@ public class UserDataService
             };
         }
 
+        var defaultVanity = new FYCharacterVanity {
+            UserID = playFabId,
+            ArchetypeID = "E01_G02",
+            SlotIndex = 0,
+            BaseSuitItem = new FYVanityMaterialItem {
+                ID = "StarterOutfit01M_BaseSuit",
+                MaterialIndex = 0,
+            },
+            HeadItem = new FYVanityMaterialItem {
+                ID = "E01_G02_Head01",
+                MaterialIndex = 0,
+            },
+            MeleeWeaponItem = new FYVanityMaterialItem {
+                ID = "Melee_Omega",
+                MaterialIndex = 0,
+            },
+            BodyType = 1,
+        };
+#if SEASON_2_RELEASE || SEASON_2_DEBUG
+        defaultVanity.BootsItem = new FYVanityMaterialItem {
+            ID = "StarterOutfit01_Boots_M",
+            MaterialIndex = 0,
+        };
+        defaultVanity.ChestItem = new FYVanityMaterialItem {
+            ID = "StarterOutfit01_Chest_M",
+            MaterialIndex = 0,
+        };
+        defaultVanity.GloveItem = new FYVanityMaterialItem {
+            ID = "StarterOutfit01_Gloves_M",
+            MaterialIndex = 0,
+        };
+#elif SEASON_3_RELEASE || SEASON_3_DEBUG
+        defaultVanity.BootsItem = new FYVanityMaterialItem {
+            ID = "StarterOutfit01_Boots",
+            MaterialIndex = 0,
+        };
+        defaultVanity.ChestItem = new FYVanityMaterialItem {
+            ID = "StarterOutfit01_Chest",
+            MaterialIndex = 0,
+        };
+        defaultVanity.GloveItem = new FYVanityMaterialItem {
+            ID = "StarterOutfit01_Gloves",
+            MaterialIndex = 0,
+        };
+#else
+#error Unsupported build type
+#endif
+
         // TODO: Proper objects.
         var defaultData = new Dictionary<string, (bool isPublic, string value)>
         {
@@ -120,9 +169,7 @@ public class UserDataService
             // Used to optimize bonuses calculation and further validations without getting the user data and computing bonuses in runtime.
             ["CharacterTechTreeBonuses"] = (false, "{\"aurumCap\":0,\"aurumRate\":0,\"kmarksCap\":0,\"kmarksRate\":0,\"crateTier\":0,\"stashSize\":0,\"safePocketSize\":0,\"upgradeSpeed\":1.0}"),
             ["GlobalVanity"] = (false, $"{{\"activeGlobalVanityIds\":[\"Season03_Spray_13\",\"Banner_MIne\",\"Emote_Chill_01\",\"\",\"\",\"\",\"\",\"\"], \"droppodId\": \"VDP_Omega02\"}}"),
-            // NOTE: Default CharacterVanity is based on Season 2 IDs.
-            ["CharacterVanity"] = (false, $"{{\"userId\":\"{playFabId}\",\"head_item\":{{\"id\":\"E01_G02_Head01\",\"materialIndex\":0}},\"boots_item\":{{\"id\":\"StarterOutfit01_Boots_M\",\"materialIndex\":0}},\"chest_item\":{{\"id\":\"StarterOutfit01_Chest_M\",\"materialIndex\":0}},\"glove_item\":{{\"id\":\"StarterOutfit01_Gloves_M\",\"materialIndex\":0}},\"base_suit_item\":{{\"id\":\"StarterOutfit01M_BaseSuit\",\"materialIndex\":0}},\"melee_weapon_item\":{{\"id\":\"Melee_Omega\",\"materialIndex\":0}},\"body_type\":1,\"archetype_id\":\"E01_G02\",\"slot_index\":0}}"),
-            // ["Inventory"] = (false, "[]"),
+            ["CharacterVanity"] = (false, JsonSerializer.Serialize(defaultVanity)),
             ["Inventory"] = (false, "[]"),
             ["VanityItems"] = (false, "[]"),
             ["RetentionBonus"] = (false, "{\"claimedAll\":false,\"daysClaimed\":0,\"lastClaimTime\":{\"seconds\":0}}"),
@@ -165,9 +212,6 @@ public class UserDataService
         }
 
         var other = currentUserId != requestUserId;
-        if (other) {
-            Console.WriteLine("aboba");
-        }
         var result = new Dictionary<string, FUserDataRecord>();
 
         if (keys != null && keys.Count > 0)
