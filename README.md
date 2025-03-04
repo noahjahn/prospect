@@ -69,8 +69,9 @@ Also known as "The Cycle: Frontier".
   * [ ] Can use Alien Forge.
 * [ ] Map content
   * [x] Bright Sands
-  * [ ] Crescent Falls
-  * [ ] Tharis Island
+  * [x] Crescent Falls
+  * [x] Tharis Island
+    * [ ] Alien Forge
 
 ## Running locally
 
