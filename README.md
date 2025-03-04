@@ -12,7 +12,7 @@ Also known as "The Cycle: Frontier".
   - [3. Patch the `hosts` file](#3-patch-the-hosts-file)
   - [4. Generate and import SSL certificate](#4-generate-and-import-ssl-certificate)
   - [5. Add `steam_appid` to the game](#5-add-steam_appid-to-the-game)
-  - [6. Create a game shortcut with specified arguments](#6-create-a-game-shortcut-with-specified-arguments)
+  - [6. Copy the `Prospect.Client.Loader` to the game](#6-copy-the-prospectclientloader-to-the-game)
   - [7. Run the server](#7-run-the-server)
   - [8. Run the game](#8-run-the-game)
 - [Troubleshooting and FAQ](#troubleshooting-and-faq)
@@ -90,7 +90,9 @@ Before you start, you'll need the following software downloaded and installed:
 
 1. [MongoDB Community Edition](https://fastdl.mongodb.org/windows/mongodb-windows-x86_64-8.0.4-signed.msi).
 
-1. [Latest `Prospect.Server.Api`](https://github.com/deiteris/Prospect/releases) from the Releases section
+1. [Latest `Prospect.Server.Api`](https://github.com/deiteris/Prospect/releases) from the Releases section.
+
+1. [Latest `Prospect.Client.Loader`](https://github.com/deiteris/Prospect/releases) from the Releases section.
 
 1. [.NET Runtime 8.0](https://aka.ms/dotnet-core-applaunch?missing_runtime=true&arch=x64&rid=win-x64&os=win10&apphost_version=8.0.11) installed.
 
@@ -171,17 +173,13 @@ to successfully communicate with the local server. Do the following:
 
 1. Save and close the file.
 
-### 6. Create a game shortcut with specified arguments
+### 6. Copy the `Prospect.Client.Loader` to the game
 
 1. Open the folder with The Cycle: Frontier and navigate to **Prospect** > **Binaries** > **Win64**.
 
-1. Right-click `Prospect-Win64-Shipping.exe` > **Create Shortcut**.
+1. Copy the downloaded `Prospect.Client.Loader` file into the folder.
 
-1. Right-click the created shortcut > **Properties**.
-
-1. In the **Target** field, add the following parameters after the quote ` -log -steam_auth PF_TITLEID=2EA46`. Note the space after the quote.
-
-1. Move the shortcut to desktop.
+1. Create a shortcut for the `Prospect.Client.Loader` that you will use later to launch the game.
 
 ### 7. Run the server
 
