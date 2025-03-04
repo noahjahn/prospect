@@ -175,6 +175,12 @@ to successfully communicate with the local server. Do the following:
 
 ### 6. Copy the `Prospect.Client.Loader` to the game
 
+> [!NOTE]
+> The current version of the loader will fix loot and mob spawning only for the following game client versions:
+>
+> - SteamDB Manifest `4623363103423775682`.
+> - The latest Steam client version.
+
 1. Open the folder with The Cycle: Frontier and navigate to **Prospect** > **Binaries** > **Win64**.
 
 1. Copy the downloaded `Prospect.Client.Loader` file into the folder.
