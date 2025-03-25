@@ -1,7 +1,9 @@
 ﻿using System.Text.Json;
 using System.Text.Json.Serialization;
 using Prospect.Server.Api.Models.Client.Data;
+using Prospect.Server.Api.Models.Data;
 using Prospect.Server.Api.Services.CloudScript.Functions;
+using Prospect.Server.Api.Services.CloudScript.Models.Data;
 using Prospect.Server.Api.Services.Database;
 
 namespace Prospect.Server.Api.Services.UserData;
@@ -171,6 +173,25 @@ public class UserDataService
             ["GlobalVanity"] = (false, $"{{\"activeGlobalVanityIds\":[\"Season03_Spray_13\",\"Banner_MIne\",\"Emote_Chill_01\",\"\",\"\",\"\",\"\",\"\"], \"droppodId\": \"VDP_Omega02\"}}"),
             ["CharacterVanity"] = (false, JsonSerializer.Serialize(defaultVanity)),
             ["Inventory"] = (false, "[]"),
+            ["JobBoardsData"] = (false, JsonSerializer.Serialize(
+                new JobBoardsData {
+                    LastBoardRefreshTimeUtc = new CloudScript.Models.Data.FYTimestamp { Seconds = 0 },
+                    Boards = [
+                        new FYFactionContractsData {
+                            FactionId = "Korolev",
+                            Contracts = [ new FYFactionContractData { }, new FYFactionContractData { }, new FYFactionContractData { }]
+                        },
+                        new FYFactionContractsData {
+                            FactionId = "Osiris",
+                            Contracts = [ new FYFactionContractData { }, new FYFactionContractData { }, new FYFactionContractData { }]
+                        },
+                        new FYFactionContractsData {
+                            FactionId = "ICA",
+                            Contracts = [ new FYFactionContractData { }, new FYFactionContractData { }, new FYFactionContractData { }]
+                        }
+                    ]
+                }
+            )),
             ["VanityItems"] = (false, "[]"),
             ["RetentionBonus"] = (false, "{\"claimedAll\":false,\"daysClaimed\":0,\"lastClaimTime\":{\"seconds\":0}}"),
             ["Balance"] = (false, "{\"IN\": 0,\"AU\": 800,\"SC\": 30000}"),
