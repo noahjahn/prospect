@@ -117,11 +117,11 @@ public class SellItemsClientFunction : ICloudScriptFunction<SellItemsClientReque
                 continue;
             }
             var blueprintData = blueprints[inventoryItem.BaseItemId];
-            // TODO: Probably better to decide based on item kind instead
-            if (inventoryItem.Durability == -1) {
+            // NOTE: Ammo and consumables have reverse price mapping.
+            if (blueprintData.Kind == "Ammo" || blueprintData.Kind == "Ability") {
                 factionProgression += (int)((float)blueprintData.OverrideScrappingReputation / blueprintData.MaxAmountPerStack * inventoryItem.Amount);
                 balance.SoftCurrency += (int)((float)blueprintData.OverrideScrappingReturns / blueprintData.MaxAmountPerStack * inventoryItem.Amount);
-            } else {
+            } else if (blueprintData.Kind == "Armor") {
                 factionProgression += (int)Math.Max(
                     (float)inventoryItem.Durability / blueprintData.DurabilityMax * blueprintData.OverrideScrappingReputation,
                     blueprintData.OverrideScrappingReputation * blueprintData.DurabilityBrokenScrappingReturnModifier
@@ -130,6 +130,9 @@ public class SellItemsClientFunction : ICloudScriptFunction<SellItemsClientReque
                     (float)inventoryItem.Durability / blueprintData.DurabilityMax * blueprintData.OverrideScrappingReturns,
                     blueprintData.OverrideScrappingReturns * blueprintData.DurabilityBrokenScrappingReturnModifier
                 );
+            } else {
+                factionProgression += blueprintData.OverrideScrappingReputation  * inventoryItem.Amount;
+                balance.SoftCurrency += blueprintData.OverrideScrappingReturns * inventoryItem.Amount;
             }
 
             scrappedItemIds.Add(itemId);
