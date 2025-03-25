@@ -1,4 +1,4 @@
-using System.Text.Json;
+﻿using System.Text.Json;
 using System.Text.Json.Serialization;
 using Prospect.Server.Api.Models.Data;
 using Prospect.Server.Api.Services.Auth.Extensions;
@@ -164,9 +164,9 @@ public class ClaimActiveContract : ICloudScriptFunction<FYClaimCompletedActiveCo
             } else if (reward.ItemID == "Aurum") {
                 balance.HardCurrency += reward.Amount;
                 changedCurrencies.Add(new FYCurrencyItem { CurrencyName = "Aurum", Amount = balance.HardCurrency });
-            } else if (reward.ItemID == "InsuranceToken") {
-                balance.InsuranceTokens += reward.Amount;
-                changedCurrencies.Add(new FYCurrencyItem { CurrencyName = "InsuranceToken", Amount = balance.InsuranceTokens });
+            } else if (reward.ItemID == "InsuranceCurrency") {
+                balance.InsuranceCurrency += reward.Amount;
+                changedCurrencies.Add(new FYCurrencyItem { CurrencyName = "InsuranceCurrency", Amount = balance.InsuranceCurrency });
             } else {
                 // TODO: Inventory limit check
 

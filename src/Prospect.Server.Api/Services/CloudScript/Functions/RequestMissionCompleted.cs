@@ -74,9 +74,9 @@ public class RequestMissionCompleted : ICloudScriptFunction<FYRequestMissionComp
                 } else if (reward.RewardRowHandle.RowName == "Aurum") {
                     balance.HardCurrency += reward.RewardAmount;
                     changedCurrencies.Add(new FYCurrencyItem { CurrencyName = "Aurum", Amount = balance.HardCurrency });
-                } else if (reward.RewardRowHandle.RowName == "InsuranceToken") {
-                    balance.InsuranceTokens += reward.RewardAmount;
-                    changedCurrencies.Add(new FYCurrencyItem { CurrencyName = "InsuranceToken", Amount = balance.InsuranceTokens });
+                } else if (reward.RewardRowHandle.RowName == "InsuranceCurrency") {
+                    balance.InsuranceCurrency += reward.RewardAmount;
+                    changedCurrencies.Add(new FYCurrencyItem { CurrencyName = "InsuranceCurrency", Amount = balance.InsuranceCurrency });
                 } else {
                     // TODO: Inventory limit check
                     var blueprintData = blueprints[reward.RewardRowHandle.RowName];

@@ -12,7 +12,7 @@ public class PlayerBalance
     public int SoftCurrency { get; set; }
 
     [JsonPropertyName("IN")]
-    public int InsuranceTokens { get; set; }
+    public int InsuranceCurrency { get; set; }
 }
 
 public class JobBoardsData
