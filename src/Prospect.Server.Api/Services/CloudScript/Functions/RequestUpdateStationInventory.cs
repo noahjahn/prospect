@@ -82,6 +82,7 @@ public class RequestUpdateStationInventoryFunction : ICloudScriptFunction<Reques
         // 2. Stack existing items - deletes existing items and updates amount of existing item.
         // 3. Change vanity data - updates an existing item.
         // 4. Change weapon mods - updates an existing item.
+        // IMPORTANT: The same request is currently used to report the updated inventory in the end of match.
         var newInventory = new List<FYCustomItemInfo>(inventory.Count);
         foreach (var item in inventory) {
             if (!request.ItemsToRemove.Contains(item.ItemId)) {
@@ -98,6 +99,7 @@ public class RequestUpdateStationInventoryFunction : ICloudScriptFunction<Reques
             inventoryItem.ModData = item.ModData;
             inventoryItem.PrimaryVanityId = item.PrimaryVanityId;
             inventoryItem.SecondaryVanityId = item.SecondaryVanityId;
+            inventoryItem.Durability = item.Durability;
         }
 
         // TODO: Check updated items and validate new items
