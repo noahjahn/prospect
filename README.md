@@ -11,10 +11,9 @@ Also known as "The Cycle: Frontier".
   - [2. Unpack `Prospect.Server.Api`](#2-unpack-prospectserverapi)
   - [3. Patch the `hosts` file](#3-patch-the-hosts-file)
   - [4. Generate and import SSL certificate](#4-generate-and-import-ssl-certificate)
-  - [5. Add `steam_appid` to the game](#5-add-steam_appid-to-the-game)
-  - [6. Copy the `Prospect.Client.Loader` to the game](#6-copy-the-prospectclientloader-to-the-game)
-  - [7. Run the server](#7-run-the-server)
-  - [8. Run the game](#8-run-the-game)
+  - [5. Extract `LoaderPack` to the game](#5-extract-loaderpack-to-the-game)
+  - [6. Run the server](#6-run-the-server)
+  - [7. Run the game](#7-run-the-game)
 - [Troubleshooting and FAQ](#troubleshooting-and-faq)
   - [How to remove the certificate?](#how-to-remove-the-certificate)
   - [`generate_ssl.exe` is flagged as a virus](#generate_sslexe-is-flagged-as-a-virus)
@@ -30,10 +29,7 @@ Also known as "The Cycle: Frontier".
 * [x] EULA acceptance
 * [x] Tutorial
 * [x] Single-player station (Season 2 and Season 3):
-  * [ ] Onboarding
-    * [x] Talk to Badum
-    * [x] Equip items
-    * [ ] Deploy to Fortuna
+  * [x] Onboarding
   * [ ] Matchmaking and deployment
     * [x] Solo
     * [ ] Squad
@@ -42,16 +38,15 @@ Also known as "The Cycle: Frontier".
   * [x] Inventory and loadout
     * [ ] Loadout presets (Season 3)
   * [x] Quests
-    * [ ] Job boards
   * [x] Faction progression
   * [ ] Season pass
-  * [ ] Shops
+  * [ ] Aurum Shops
     * [ ] Daily shop
     * [ ] Weekly shop
     * [ ] Shop rotation
   * [x] Daily login
   * [x] Character appearance and emotes
-  * [x] Shops
+  * [x] Item Shops
   * [x] Crafting station
   * [x] Quarters
   * [x] Player balance
@@ -63,15 +58,16 @@ Also known as "The Cycle: Frontier".
 * [ ] Game mechanics
   * [x] Can deploy through terminal
   * [x] Can deploy with loadout
-  * [ ] Can evac
+  * [x] Can evac
   * [ ] Can do quests
-  * [ ] Can gain/lose loot
-  * [ ] Can use Alien Forge.
-* [ ] Map content
+    * [x] Delivery quests
+    * [ ] Kill quests
+  * [x] Can gain/lose loot
+  * [x] Can use Alien Forge.
+* [x] Map content
   * [x] Bright Sands
   * [x] Crescent Falls
   * [x] Tharis Island
-    * [ ] Alien Forge
 
 ## Running locally
 
@@ -91,21 +87,17 @@ Before you start, you'll need the following software downloaded and installed:
 
 1. [MongoDB Community Edition](https://fastdl.mongodb.org/windows/mongodb-windows-x86_64-8.0.4-signed.msi).
 
-1. [Latest `Prospect.Server.Api`](https://github.com/deiteris/Prospect/releases) from the Releases section.
+1. [`Prospect.Server.Api` and `LoaderPack`](https://github.com/deiteris/Prospect/releases) from the Releases section:
 
-1. [Latest `Prospect.Client.Loader`](https://github.com/deiteris/Prospect/releases) from the Releases section.
+   - For Season 3 (the latest Steam game client), use Build 6.
 
-1. [.NET Runtime 8.0](https://aka.ms/dotnet-core-applaunch?missing_runtime=true&arch=x64&rid=win-x64&os=win10&apphost_version=8.0.11) installed.
-
-1. [ASP.NET Core 8.0](https://aka.ms/dotnet-core-applaunch?framework=Microsoft.AspNetCore.App&framework_version=8.0.0&arch=x64&rid=win-x64&os=win10) installed.
+   - For Season 2 game client, use the latest version.
 
 1. The Cycle: Frontier game client:
 
    - The latest version from [Steam](https://steamcommunity.com/app/868270).
 
-   - Season 2 client. See [download instructions below](#11-how-to-download-season-2-client-from-steamdb-using-steam-console).
-
-   - Any other version, even Season 1 works.
+   - Season 2 client version `4623363103423775682` from SteamDB. See [download instructions below](#11-how-to-download-season-2-client-from-steamdb-using-steam-console).
 
 #### 1.1 How to download Season 2 client from SteamDB using Steam console
 
@@ -164,40 +156,24 @@ to successfully communicate with the local server. Do the following:
 
     1. Click **Finish**. A **Security Warning** popup may appear, make sure it specifies `2EA46.playfabapi.com` certification authority and click **Yes**.
 
-### 5. Add `steam_appid` to the game
+### 5. Extract `LoaderPack` to the game
 
 1. Open the folder with The Cycle: Frontier and navigate to **Prospect** > **Binaries** > **Win64**.
 
-1. Right-click in the folder > **New** > **Text Document**, and name it `steam_appid`.
+1. Open the `LoaderPack` archive.
 
-1. Open `steam_appid` and enter `480`.
-
-1. Save and close the file.
-
-### 6. Copy the `Prospect.Client.Loader` to the game
-
-> [!NOTE]
-> The current version of the loader will fix loot and mob spawning only for the following game client versions:
->
-> - SteamDB Manifest `4623363103423775682`.
-> - The latest Steam client version.
-
-1. Open the folder with The Cycle: Frontier and navigate to **Prospect** > **Binaries** > **Win64**.
-
-1. Copy the downloaded `Prospect.Client.Loader` file into the folder.
+1. Drag and drop the contents of the `LoaderPack` archive to the game.
 
 1. Create a shortcut for the `Prospect.Client.Loader` that you will use later to launch the game.
 
-### 7. Run the server
+### 6. Run the server
 
 Now you are all set! Open the folder with `Prospect.Server.Api` and run `Prospect.Server.Api.exe`. It will open a console if it runs successfully.
 
 > [!IMPORTANT]
 > Do not close the console when you run the game.
->
-> If the console does not open, make sure you have [.NET Runtime 8.0](https://aka.ms/dotnet-core-applaunch?missing_runtime=true&arch=x64&rid=win-x64&os=win10&apphost_version=8.0.11) and [ASP.NET Core 8.0](https://aka.ms/dotnet-core-applaunch?framework=Microsoft.AspNetCore.App&framework_version=8.0.0&arch=x64&rid=win-x64&os=win10) installed.
 
-### 8. Run the game
+### 7. Run the game
 
 Once the server is running, make sure that Steam is running and open The Cycle: Frontier using the shortcut you've created before.
 
