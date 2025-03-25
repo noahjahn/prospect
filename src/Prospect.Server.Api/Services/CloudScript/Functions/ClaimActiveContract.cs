@@ -1,4 +1,4 @@
-﻿using System.Text.Json;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 using Prospect.Server.Api.Models.Data;
 using Prospect.Server.Api.Services.Auth.Extensions;
@@ -245,6 +245,13 @@ public class ClaimActiveContract : ICloudScriptFunction<FYClaimCompletedActiveCo
         foreach (var contractIdToUnlock in request.ContractsToUnlock) {
             var contractToUnlock = contracts[contractIdToUnlock];
             var progress = new int[contractToUnlock.Objectives.Length];
+            // TODO: Automatically set max progress of kill and visit objectives. To remove once kill and visit objectives are reported by the client.
+            for (var i = 0; i < contractToUnlock.Objectives.Length; i++) {
+                var objective = contractToUnlock.Objectives[i];
+                if (objective.Type != EYContractObjectiveType.OwnNumOfItem) {
+                    progress[i] = objective.MaxProgress;
+                }
+            }
             var newContract = new FYActiveContractPlayerData {
                 ContractID = contractIdToUnlock,
                 Progress = progress,
