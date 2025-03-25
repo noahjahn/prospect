@@ -50,6 +50,8 @@ public class ClaimActiveContract : ICloudScriptFunction<FYClaimCompletedActiveCo
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly UserDataService _userDataService;
     private readonly TitleDataService _titleDataService;
+    private readonly string[] difficulties = ["Easy", "Medium", "Hard"];
+    private readonly Random rnd = new Random();
 
     public ClaimActiveContract(IHttpContextAccessor httpContextAccessor, UserDataService userDataService, TitleDataService titleDataService)
     {
@@ -66,11 +68,10 @@ public class ClaimActiveContract : ICloudScriptFunction<FYClaimCompletedActiveCo
             throw new CloudScriptException("CloudScript was not called within a http request");
         }
         var userId = context.User.FindAuthUserId();
-        var titleData = _titleDataService.Find(new List<string>{"Contracts", "Blueprints"});
+        var titleData = _titleDataService.Find(new List<string>{ "Contracts", "Blueprints", "Jobs", "LevelData" });
 
         var contracts = JsonSerializer.Deserialize<Dictionary<string, TitleDataContractInfo>>(titleData["Contracts"]);
-        var contract = contracts[request.ContractID];
-        if (contract == null) {
+        if (!contracts.TryGetValue(request.ContractID, out var contract)) {
             return new FYClaimCompletedActiveContractRewardsResult
             {
                 UserID = userId,
@@ -82,16 +83,17 @@ public class ClaimActiveContract : ICloudScriptFunction<FYClaimCompletedActiveCo
         var factionKey = "FactionProgression" + contract.Faction;
         var userData = await _userDataService.FindAsync(
             userId, userId,
-            new List<string>{"ContractsActive", "ContractsOneTimeCompleted", "Balance", "Inventory", factionKey}
+            new List<string>{"ContractsActive", "ContractsOneTimeCompleted", "Balance", "Inventory", factionKey, "JobBoardsData" }
         );
 
         var factionProgression = JsonSerializer.Deserialize<int>(userData[factionKey].Value);
         var contractsActive = JsonSerializer.Deserialize<FYGetActiveContractsResult>(userData["ContractsActive"].Value);
         var contractsCompleted = JsonSerializer.Deserialize<FYGetCompletedContractsResult>(userData["ContractsOneTimeCompleted"].Value);
+        var jobBoardsData = JsonSerializer.Deserialize<JobBoardsData>(userData["JobBoardsData"].Value);
         var balance = JsonSerializer.Deserialize<PlayerBalance>(userData["Balance"].Value);
         var inventory = JsonSerializer.Deserialize<List<FYCustomItemInfo>>(userData["Inventory"].Value);
 
-        var targetContractIdx = contractsActive.Contracts.FindIndex(item => item.ContractID == request.ContractID);
+        var targetContractIdx = contractsActive.Contracts.FindIndex(item => item.ContractID == contract.Name);
         if (targetContractIdx == -1) {
             return new FYClaimCompletedActiveContractRewardsResult
             {
@@ -106,6 +108,7 @@ public class ClaimActiveContract : ICloudScriptFunction<FYClaimCompletedActiveCo
         var targetContract = contractsActive.Contracts[targetContractIdx];
         List<FYCustomItemInfo> itemsUpdatedOrRemoved = [];
         HashSet<string> deletedItemsIds = [];
+        // TODO: Optimize
         for (var i = 0; i < contract.Objectives.Length; i++) {
             var objective = contract.Objectives[i];
             int remaining = objective.MaxProgress;
@@ -211,10 +214,33 @@ public class ClaimActiveContract : ICloudScriptFunction<FYClaimCompletedActiveCo
         factionProgression += contract.ReputationIncrease;
         contractsActive.Contracts.RemoveAt(targetContractIdx);
         // Main contracts can be completed only once.
+        // Other contracts should be jobs.
+        var newContractIdOnBoard = "";
         if (contract.IsMainContract) {
-            contractsCompleted.ContractsIDs.Add(request.ContractID);
+            contractsCompleted.ContractsIDs.Add(contract.Name);
+        } else {
+            var parts = contract.Name.Split('-');
+            var difficulty = parts[1];
+
+            var levelsData = JsonSerializer.Deserialize<Dictionary<string, int[]>>(titleData["LevelData"]);
+            var levels = levelsData[contract.Faction];
+            var jobs = JsonSerializer.Deserialize<Dictionary<string, Dictionary<string, string[]>>>(titleData["Jobs"]);
+            var level = levels.Length - Array.FindIndex(levels, (int xp) => {
+                return factionProgression >= xp;
+            });
+
+            var factionBoard = jobBoardsData.Boards.Find(c => c.FactionId == contract.Faction);
+            var idx = Array.FindIndex(difficulties, d => d == difficulty);
+            var factionJobs = jobs[contract.Faction];
+            var jobsAvailable = Array.FindAll(factionJobs[difficulty], (string jobId) => {
+                return level >= contracts[jobId].UnlockData.Level;
+            });
+            // If player completes a job, it means he has at least one unlocked anyway.
+            newContractIdOnBoard = jobsAvailable[rnd.Next(jobsAvailable.Length)];
+            factionBoard.Contracts[idx].ContractId = newContractIdOnBoard;
         }
 
+        // TODO: Check for next unlock in contracts instead of relying on client
         var newContracts = new List<FYActiveContractPlayerData>();
         foreach (var contractIdToUnlock in request.ContractsToUnlock) {
             var contractToUnlock = contracts[contractIdToUnlock];
@@ -235,6 +261,7 @@ public class ClaimActiveContract : ICloudScriptFunction<FYClaimCompletedActiveCo
                 ["Balance"] = JsonSerializer.Serialize(balance),
                 ["Inventory"] = JsonSerializer.Serialize(newInventory),
                 [factionKey] = JsonSerializer.Serialize(factionProgression),
+                ["JobBoardsData"] = JsonSerializer.Serialize(jobBoardsData),
             }
         );
 
@@ -242,12 +269,12 @@ public class ClaimActiveContract : ICloudScriptFunction<FYClaimCompletedActiveCo
         {
             UserID = userId,
             Error = "",
-            ClaimedContractID = request.ContractID,
+            ClaimedContractID = contract.Name,
             ContractsActivated = newContracts,
             ItemsUpdatedOrRemoved = itemsUpdatedOrRemoved,
             ChangedCurrencies = changedCurrencies.ToArray(),
             ItemsGranted = itemsGranted,
-            NewContractIdOnBoard = "", // TODO: This should be a replacement contract apparently?
+            NewContractIdOnBoard = newContractIdOnBoard,
             PlayerFactionProgressData = new FYPlayerFactionProgressData {
                 FactionID = contract.Faction,
                 CurrentProgression = factionProgression,

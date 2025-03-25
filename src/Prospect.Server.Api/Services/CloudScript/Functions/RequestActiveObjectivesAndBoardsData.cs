@@ -1,4 +1,7 @@
-﻿using System.Text.Json;
+﻿using System.Collections;
+using System.Diagnostics.Contracts;
+using System.Text.Json;
+using Prospect.Server.Api.Models.Data;
 using Prospect.Server.Api.Services.Auth.Extensions;
 using Prospect.Server.Api.Services.CloudScript.Models;
 using Prospect.Server.Api.Services.CloudScript.Models.Data;
@@ -11,11 +14,16 @@ public class RequestActiveObjectivesAndBoardsData : ICloudScriptFunction<FYQuery
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly UserDataService _userDataService;
+    private readonly TitleDataService _titleDataService;
+    private readonly string[] factions = ["Korolev", "Osiris", "ICA"]; // TODO: Order is important
+    private readonly string[] difficulties = ["Easy", "Medium", "Hard"];
+    private readonly Random rnd = new Random();
 
-    public RequestActiveObjectivesAndBoardsData(IHttpContextAccessor httpContextAccessor, UserDataService userDataService)
+    public RequestActiveObjectivesAndBoardsData(IHttpContextAccessor httpContextAccessor, UserDataService userDataService, TitleDataService titleDataService)
     {
         _httpContextAccessor = httpContextAccessor;
         _userDataService = userDataService;
+        _titleDataService = titleDataService;
     }
 
     public async Task<FYGetPlayerContractsResult> ExecuteAsync(FYQueryFactionProgressionRequest request)
@@ -26,10 +34,65 @@ public class RequestActiveObjectivesAndBoardsData : ICloudScriptFunction<FYQuery
             return new FYGetPlayerContractsResult{};
         }
         var userId = context.User.FindAuthUserId();
-        var userData = await _userDataService.FindAsync(userId, userId, new List<string>{"ContractsActive"});
-        var contractsActive = JsonSerializer.Deserialize<FYGetActiveContractsResult>(userData["ContractsActive"].Value);
 
-        // TODO: Get player's contract boards and refresh
+        var userData = await _userDataService.FindAsync(userId, userId, new List<string>{ "ContractsActive", "JobBoardsData", "FactionProgressionKorolev", "FactionProgressionICA", "FactionProgressionOsiris" });
+        var contractsActive = JsonSerializer.Deserialize<FYGetActiveContractsResult>(userData["ContractsActive"].Value);
+        var jobBoardsData = JsonSerializer.Deserialize<JobBoardsData>(userData["JobBoardsData"].Value);
+
+        var now = (int)DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+        var lastBoardRefreshTimeUtc = jobBoardsData.LastBoardRefreshTimeUtc;
+        var boards = jobBoardsData.Boards;
+        // The boards are updated once in 3 hours
+        if (now >= lastBoardRefreshTimeUtc.Seconds + 60 * 60 * 3) {
+            var titleData = _titleDataService.Find(new List<string> { "Contracts", "Jobs", "LevelData" });
+
+            var contracts = JsonSerializer.Deserialize<Dictionary<string, TitleDataContractInfo>>(titleData["Contracts"]);
+            var jobs = JsonSerializer.Deserialize<Dictionary<string, Dictionary<string, string[]>>>(titleData["Jobs"]);
+            var levelsData = JsonSerializer.Deserialize<Dictionary<string, int[]>>(titleData["LevelData"]);
+            var currentQuests = new Dictionary<string, Dictionary<string, bool>> { 
+                ["Korolev"] = new Dictionary<string, bool> { ["Easy"] = false, ["Medium"] = false, ["Hard"] = false },
+                ["Osiris"] = new Dictionary<string, bool> { ["Easy"] = false, ["Medium"] = false, ["Hard"] = false },
+                ["ICA"] = new Dictionary<string, bool> { ["Easy"] = false, ["Medium"] = false, ["Hard"] = false },
+            };
+
+            foreach (var contract in contractsActive.Contracts) {
+                var parts = contract.ContractID.Split('-');
+                if (parts[0] != "NEW") {
+                    continue;
+                }
+                var difficulty = parts[1];
+                var faction = parts[2] == "KOR" ? "Korolev" : parts[2];
+                currentQuests[faction][difficulty] = true;
+            }
+
+            for (var i = 0; i < factions.Length; i++) {
+                var faction = factions[i];
+                var factionProgression = JsonSerializer.Deserialize<int>(userData[$"FactionProgression{faction}"].Value);
+                var levels = levelsData[faction];
+                var level = levels.Length - Array.FindIndex(levels, (int xp) => {
+                    return factionProgression >= xp;
+                });
+
+                for (var j = 0; j < difficulties.Length; j++) {
+                    var difficulty = difficulties[j];
+                    if (currentQuests[faction][difficulty]) {
+                        continue;
+                    }
+                    var factionJobs = jobs[faction];
+                    var jobsAvailable = Array.FindAll(factionJobs[difficulty], (string jobId) => {
+                        return level >= contracts[jobId].UnlockData.Level;
+                    });
+                    string jobId = jobsAvailable.Length > 0 ? jobsAvailable[rnd.Next(jobsAvailable.Length)] : factionJobs[difficulty][0];
+                    boards[i].Contracts[j] = new FYFactionContractData { ContractId = jobId };
+                }
+            }
+            lastBoardRefreshTimeUtc.Seconds = now;
+
+            await _userDataService.UpdateAsync(
+                userId, userId,
+                new Dictionary<string, string> { ["JobBoardsData"] = JsonSerializer.Serialize(jobBoardsData) }
+            );
+        }
 
         return new FYGetPlayerContractsResult
         {
@@ -38,72 +101,10 @@ public class RequestActiveObjectivesAndBoardsData : ICloudScriptFunction<FYQuery
             ActiveContracts = contractsActive.Contracts,
             FactionsContracts = new FYFactionsContractsData
             {
-                Boards = new List<FYFactionContractsData>
-                {
-                    new FYFactionContractsData
-                    {
-                        FactionId = "ICA",
-                        Contracts = new List<FYFactionContractData>
-                        {
-                            new FYFactionContractData
-                            {
-                                ContractId = "NEW-Easy-ICA-Gather-1",
-                            },
-                            new FYFactionContractData
-                            {
-                                ContractId = "NEW-Medium-ICA-Uplink-1",
-                            },
-                            new FYFactionContractData
-                            {
-                                ContractId = "NEW-Hard-ICA-Uplink-1",
-                            }
-                        }
-                    },
-                    new FYFactionContractsData
-                    {
-                        FactionId = "Korolev",
-                        Contracts = new List<FYFactionContractData>
-                        {
-                            new FYFactionContractData
-                            {
-                                ContractId = "NEW-Easy-KOR-Mine-4",
-                            },
-                            new FYFactionContractData
-                            {
-                                ContractId = "NEW-Medium-KOR-Mine-1",
-                            },
-                            new FYFactionContractData
-                            {
-                                ContractId = "NEW-Hard-KOR-PvP-6",
-                            }
-                        }
-                    },
-                    new FYFactionContractsData
-                    {
-                        FactionId = "Osiris",
-                        Contracts = new List<FYFactionContractData>
-                        {
-                            new FYFactionContractData
-                            {
-                                ContractId = "NEW-Easy-Osiris-Brightcaps-1",
-                            },
-                            new FYFactionContractData
-                            {
-                                ContractId = "NEW-Medium-Osiris-Gather-1",
-                            },
-                            new FYFactionContractData
-                            {
-                                ContractId = "NEW-Hard-Osiris-Gather-7",
-                            }
-                        }
-                    }
-                },
-                LastBoardRefreshTimeUtc = new FYTimestamp
-                {
-                    Seconds = (int)DateTimeOffset.UtcNow.ToUnixTimeSeconds()
-                }
+                Boards = boards,
+                LastBoardRefreshTimeUtc = lastBoardRefreshTimeUtc
             },
-            RefreshHours24UtcFromBackend = 12
+            RefreshHours24UtcFromBackend = 12 // Doesn't seem to work
         };
     }
 }

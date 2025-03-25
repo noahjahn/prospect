@@ -1,4 +1,5 @@
 using System.Text.Json.Serialization;
+using Prospect.Server.Api.Services.CloudScript.Models.Data;
 
 namespace Prospect.Server.Api.Models.Data;
 
@@ -12,4 +13,13 @@ public class PlayerBalance
 
     [JsonPropertyName("IN")]
     public int InsuranceTokens { get; set; }
+}
+
+public class JobBoardsData
+{
+    [JsonPropertyName("lastBoardRefreshTimeUtc")]
+    public FYTimestamp LastBoardRefreshTimeUtc { get; set; }
+
+    [JsonPropertyName("boards")]
+    public List<FYFactionContractsData> Boards { get; set; }
 }
