@@ -59,8 +59,7 @@ public class ActivateContract : ICloudScriptFunction<FYActivateContractRequest, 
         var titleData = _titleDataService.Find(new List<string>{"Contracts"});
 
         var contracts = JsonSerializer.Deserialize<Dictionary<string, TitleDataContractInfo>>(titleData["Contracts"]);
-        var contract = contracts[request.ContractID];
-        if (contract == null) {
+        if (!contracts.TryGetValue(request.ContractID, out var contract)) {
             return new FYActivateContractResult
             {
                 UserID = userId,
