@@ -32,18 +32,13 @@ public class CheckClientVersionUpToDateFunction : ICloudScriptFunction<CheckClie
         _logger.LogInformation("Processing client version check request for client {Version}",
             request.Version);
 
-        // TODO: Validate login
-        // if (string.IsNullOrEmpty(request.LoginNonce))
-        // {
-        //     return new CheckClientVersionUpToDateResponse
-        //     {
-        //         IsClientUpToDate = false,
-        //     };
-        // }
-
         return new CheckClientVersionUpToDateResponse
         {
+#if SEASON_2_RELEASE || SEASON_2_DEBUG
+            IsClientUpToDate = request.Version == "4.27.2-1413204+PROSPECT-Releases-R2.7.0",
+#else
             IsClientUpToDate = true,
+#endif
         };
     }
 }
