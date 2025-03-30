@@ -65,7 +65,7 @@ public class Startup
             app.UseDeveloperExceptionPage();
         }
 
-        app.UseHttpsRedirection();
+        // app.UseHttpsRedirection();
         app.UseSerilogRequestLogging();
         app.UseMiddleware<RequestLoggerMiddleware>();
         app.UseRouting();
