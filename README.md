@@ -9,11 +9,10 @@ Also known as "The Cycle: Frontier".
   - [1. Prerequisites](#1-prerequisites)
     - [1.1 How to download Season 2 client from SteamDB using Steam console](#11-how-to-download-season-2-client-from-steamdb-using-steam-console)
   - [2. Unpack `Prospect.Server.Api`](#2-unpack-prospectserverapi)
-  - [3. Patch the `hosts` file](#3-patch-the-hosts-file)
-  - [4. Generate and import SSL certificate](#4-generate-and-import-ssl-certificate)
-  - [5. Extract `LoaderPack` to the game](#5-extract-loaderpack-to-the-game)
-  - [6. Run the server](#6-run-the-server)
-  - [7. Run the game](#7-run-the-game)
+  - [3. Generate and import SSL certificate](#3-generate-and-import-ssl-certificate)
+  - [4. Extract `LoaderPack` to the game](#4-extract-loaderpack-to-the-game)
+  - [5. Run the server](#5-run-the-server)
+  - [6. Run the game](#6-run-the-game)
 - [Troubleshooting and FAQ](#troubleshooting-and-faq)
   - [How to remove the certificate?](#how-to-remove-the-certificate)
   - [`generate_ssl.exe` is flagged as a virus](#generate_sslexe-is-flagged-as-a-virus)
@@ -122,17 +121,7 @@ Before you start, you'll need the following software downloaded and installed:
 
 Use your favorite ZIP archiver and unzip the `Prospect.Server.Api.zip` downloaded from this repository.
 
-### 3. Patch the `hosts` file
-
-To be able to connect to the locally running server, you must replace the IP address of `2EA46.playfabapi.com` that the game uses. Do the following:
-
-1. Open Notepad as Administrator.
-
-1. Click **File** > **Open...** and select `C:\Windows\System32\drivers\etc\hosts`.
-
-1. At the end of the file, add `127.0.0.1 2EA46.playfabapi.com` on a new line. Do not add the `#` character!
-
-### 4. Generate and import SSL certificate
+### 3. Generate and import SSL certificate
 
 > [!IMPORTANT]
 > Do not share the generated certificate! Generated certificate includes a private key that may be used to generate other certificates and compromise your security.
@@ -156,7 +145,7 @@ to successfully communicate with the local server. Do the following:
 
     1. Click **Finish**. A **Security Warning** popup may appear, make sure it specifies `2EA46.playfabapi.com` certification authority and click **Yes**.
 
-### 5. Extract `LoaderPack` to the game
+### 4. Extract `LoaderPack` to the game
 
 1. Open the folder with The Cycle: Frontier and navigate to **Prospect** > **Binaries** > **Win64**.
 
@@ -166,14 +155,14 @@ to successfully communicate with the local server. Do the following:
 
 1. Create a shortcut for the `Prospect.Client.Loader` that you will use later to launch the game.
 
-### 6. Run the server
+### 5. Run the server
 
 Now you are all set! Open the folder with `Prospect.Server.Api` and run `Prospect.Server.Api.exe`. It will open a console if it runs successfully.
 
 > [!IMPORTANT]
 > Do not close the console when you run the game.
 
-### 7. Run the game
+### 6. Run the game
 
 Once the server is running, make sure that Steam is running and open The Cycle: Frontier using the shortcut you've created before.
 
@@ -214,17 +203,14 @@ Make sure that:
 
 ### Login Failed. Error code: 5
 
-Make sure that:
+Make sure that `Prospect.Server.Api` server is running.
 
-* `Prospect.Server.Api` server is running.
-* The `C:\Windows\System32\drivers\etc\hosts` file contains `127.0.0.1 2EA46.playfabapi.com` and that the file is **saved**.
-
-If the server works and the `hosts` file is saved, press `Alt+Tab` to a game console that opens when you start the game and check for the following:
+If the server is running, press `Alt+Tab` to a game console that opens when you start the game and check for the following:
 
 * `libcurl error 7 (Couldn't connect to server)` - indicates that the `Prospect.Server.Api` is not running.
   ![](./_assets/connection_refused_error.png)
 
-* `InvalidAPIEndpoint` - indicates that the `hosts` file was not updated properly.
+* `InvalidAPIEndpoint` - indicates that you are running the game using the original shortcut and not using `Prospect.Client.Loader`.
   ![](./_assets/invalid_api_endpoint.PNG)
 
 * `libcurl error 60 (Peer certificate cannot be authenticated with given CA certificates)` - indicates that the certificate was not installed correctly. Make sure that the certificate is present in `certmgr.msc` and there is only one certificate. Try removing the certificate and importing it again by following step 4.
