@@ -171,7 +171,7 @@ public class ClaimActiveContract : ICloudScriptFunction<FYClaimCompletedActiveCo
                 // TODO: Inventory limit check
 
                 var blueprintData = blueprints[reward.ItemID];
-                var remainingAmount = reward.Amount * blueprintData.AmountPerPurchase;
+                var remainingAmount = reward.Amount; // Quest rewards are given individually
 
                 // Populate incomplete stacks first
                 foreach (var item in newInventory) {
