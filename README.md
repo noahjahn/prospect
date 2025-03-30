@@ -54,15 +54,13 @@ Also known as "The Cycle: Frontier".
     * [x] Vivox login
     * [x] Vivox create and join channel
     * [ ] Proximity voice works
-* [ ] Game mechanics
+* [x] Game mechanics
   * [x] Can deploy through terminal
   * [x] Can deploy with loadout
   * [x] Can evac
-  * [ ] Can do quests
-    * [x] Delivery quests
-    * [ ] Kill quests
+  * [x] Can do quests (except PvP)
   * [x] Can gain/lose loot
-  * [x] Can use Alien Forge.
+  * [x] Can use Alien Forge
 * [x] Map content
   * [x] Bright Sands
   * [x] Crescent Falls
