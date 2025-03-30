@@ -2,7 +2,14 @@
 #include <tlhelp32.h>
 #include <stdio.h>
 #include <stdint.h>
-#include <string.h>
+#include <string>
+
+std::wstring ExePath() {
+    TCHAR buffer[MAX_PATH] = { 0 };
+    GetModuleFileName( NULL, buffer, MAX_PATH );
+    std::wstring::size_type pos = std::wstring(buffer).find_last_of(L"\\/");
+    return std::wstring(buffer).substr(0, pos);
+}
 
 // Function to create and launch a process with parameters
 HANDLE StartProcess(const wchar_t* exePath, DWORD* processID) {
@@ -22,7 +29,20 @@ HANDLE StartProcess(const wchar_t* exePath, DWORD* processID) {
         return pi.hProcess;
     }
     else {
-        printf("Failed to start process. Error: %lu\n", GetLastError());
+        wchar_t szErrorMessage[512];
+
+        DWORD dwErrorCode = GetLastError();
+        FormatMessage(
+            FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+            NULL,
+            dwErrorCode,
+            0,
+            szErrorMessage,
+            sizeof(szErrorMessage),
+            NULL
+        );
+
+        printf("Failed to start process. Error: %lu: %ws\n", dwErrorCode, szErrorMessage);
         return NULL;
     }
 }
@@ -158,7 +178,7 @@ bool PatchForceLevelStreaming(HANDLE hProcess, uintptr_t imageBase) {
     }
 
     if (!found) {
-        printf("Failed to patch force level streaming!");
+        printf("Failed to patch force level streaming!\n");
         return false;
     }
 
@@ -204,10 +224,10 @@ bool PatchForceLevelStreaming(HANDLE hProcess, uintptr_t imageBase) {
     }
 
     {
-        BYTE newValues[28] = { 
-            0x48, 0x8B, 0x06, 
-            0x48, 0x8D, 0x4D, 0x7F, 
-            0x48, 0x89, 0x45, 0x7F, 
+        BYTE newValues[28] = {
+            0x48, 0x8B, 0x06,
+            0x48, 0x8D, 0x4D, 0x7F,
+            0x48, 0x89, 0x45, 0x7F,
             0xE8, 0xDC, 0xC7, 0xA7, 0x00,
             0x48, 0x85, 0xC0,
             0x0F, 0x84, 0xEE, 0x00, 0x00, 0x00,
@@ -268,9 +288,9 @@ bool PatchUpdateInventory(HANDLE hProcess, uintptr_t imageBase) {
         address = imageBase + 0x3D19B19;
         found = CheckUpdateInventoryFunctionOffset(hProcess, address);
     }
-    
+
     if (!found) {
-        printf("Failed to patch inventory update function!");
+        printf("Failed to patch inventory update function!\n");
         return false;
     }
 
@@ -322,7 +342,7 @@ bool PatchLoadPlayerContracts(HANDLE hProcess, uintptr_t imageBase) {
     uintptr_t address = imageBase + 0x171E9EC;
     bool found = CheckUpdatePlayerContractsOffset(hProcess, address);
     if (!found) {
-        printf("Failed to update player contracts function!");
+        printf("Failed to update player contracts function!\n");
         return false;
     }
 
@@ -337,7 +357,7 @@ bool PatchLoadPlayerContracts(HANDLE hProcess, uintptr_t imageBase) {
     address = imageBase + 0x1706127;
     found = CheckSetupPlayerContractsOffset(hProcess, address);
     if (!found) {
-        printf("Failed to find setup player contracts function!");
+        printf("Failed to find setup player contracts function!\n");
         return false;
     }
 
@@ -356,8 +376,7 @@ bool PatchLoadPlayerContracts(HANDLE hProcess, uintptr_t imageBase) {
     return true;
 }
 
-bool Inject(HANDLE hProcess) {
-    const wchar_t* dllPath = L"UE4SS.dll";
+bool Inject(HANDLE hProcess, const wchar_t* dllPath) {
     // Allocate space in the target process for the DLL path
     size_t pathSize = (wcslen(dllPath) + 1) * sizeof(wchar_t);
     LPVOID remotePath = VirtualAllocEx(hProcess, NULL, pathSize, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
@@ -401,29 +420,29 @@ bool Inject(HANDLE hProcess) {
 
 bool Patch(const wchar_t* processName) {
     DWORD processID;
-    uintptr_t imageBase;
 
     HANDLE hProcess = StartProcess(processName, &processID);
     if (hProcess == NULL) {
         return false;
     }
-
-    // Wait a bit for PE image to load
-    Sleep(5000);
-    // Find the PE Image Base Address
-    imageBase = GetModuleBaseAddress(processID);
-    if (imageBase == 0) {
-        printf("Failed to find PE Image Base Address.\n");
+    if (!Inject(hProcess, L"Prospect.Agent.dll")) {
         return false;
+    }
+    if (!Inject(hProcess, L"UE4SS.dll")) {
+        return false;
+    }
+
+    uintptr_t imageBase;
+    // Wait a bit for PE image to load
+    Sleep(250);
+    while ((imageBase = GetModuleBaseAddress(processID)) == 0) {
+        printf("Failed to find PE Image Base Address. Retrying...\n");
+        Sleep(250);
     }
     printf("PE Image Base Address: 0x%p\n", (void*)imageBase);
 
     bool success = !PatchForceLevelStreaming(hProcess, imageBase) || !PatchUpdateInventory(hProcess, imageBase) || !PatchLoadPlayerContracts(hProcess, imageBase);
     if (success) {
-        return false;
-    }
-
-    if (!Inject(hProcess)) {
         return false;
     }
 
@@ -459,6 +478,8 @@ bool WriteSteamAppIDFile() {
 }
 
 int main() {
+    printf("Current working directory: %ws\n", ExePath().c_str());
+
     bool success = WriteSteamAppIDFile();
     if (!success) {
         // Wait for user input to exit
