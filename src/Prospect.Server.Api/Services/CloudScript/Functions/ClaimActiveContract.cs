@@ -1,4 +1,4 @@
-using System.Text.Json;
+﻿using System.Text.Json;
 using System.Text.Json.Serialization;
 using Prospect.Server.Api.Models.Data;
 using Prospect.Server.Api.Services.Auth.Extensions;
