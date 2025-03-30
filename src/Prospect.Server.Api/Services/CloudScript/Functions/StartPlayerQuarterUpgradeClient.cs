@@ -135,7 +135,7 @@ public class StartPlayerQuarterUpgradeClient : ICloudScriptFunction<FYStartPlaye
             userId, userId,
             new Dictionary<string, string>{
                 ["Balance"] = JsonSerializer.Serialize(balance),
-                ["Inventory"] = JsonSerializer.Serialize(inventory),
+                ["Inventory"] = JsonSerializer.Serialize(newInventory),
                 ["PlayerQuartersLevel"] = JsonSerializer.Serialize(userPlayerQuarters),
             }
         );
