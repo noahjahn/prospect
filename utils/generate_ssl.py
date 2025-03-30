@@ -4,8 +4,13 @@ from cryptography.x509 import NameOID, CertificateBuilder
 from cryptography import x509
 import datetime
 import os
+import argparse
 
 def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--common-name", type=str, default='127.0.0.1')
+    args = parser.parse_args()
+
     if os.path.exists("certificate.pfx"):
         q = input("certificate.pfx already exists. Are you sure you want to generate a new certificate? (y/n): ")
         if q != "y":
@@ -20,7 +25,7 @@ def main():
 
     # Generate self-signed certificate
     subject = issuer = x509.Name([
-        x509.NameAttribute(NameOID.COMMON_NAME, '2EA46.playfabapi.com'),
+        x509.NameAttribute(NameOID.COMMON_NAME, args.common_name),
     ])
 
     cert = CertificateBuilder().subject_name(
