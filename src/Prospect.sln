@@ -23,6 +23,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Prospect.Unreal.Generator",
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Prospect.Client.Loader", "Prospect.Client.Loader\Prospect.Client.Loader.vcxproj", "{04B1D963-2BCB-4887-9D6D-04CB3366A348}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Prospect.Agent", "Prospect.Agent\Prospect.Agent.vcxproj", "{A9BA7D25-F239-4320-A0DC-85E8001FD669}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -207,6 +209,30 @@ Global
 		{04B1D963-2BCB-4887-9D6D-04CB3366A348}.Season 3 Release|x64.Build.0 = Release|x64
 		{04B1D963-2BCB-4887-9D6D-04CB3366A348}.Season 3 Release|x86.ActiveCfg = Release|Win32
 		{04B1D963-2BCB-4887-9D6D-04CB3366A348}.Season 3 Release|x86.Build.0 = Release|Win32
+		{A9BA7D25-F239-4320-A0DC-85E8001FD669}.Debug|x64.ActiveCfg = Debug|x64
+		{A9BA7D25-F239-4320-A0DC-85E8001FD669}.Debug|x64.Build.0 = Debug|x64
+		{A9BA7D25-F239-4320-A0DC-85E8001FD669}.Debug|x86.ActiveCfg = Debug|x64
+		{A9BA7D25-F239-4320-A0DC-85E8001FD669}.Debug|x86.Build.0 = Debug|x64
+		{A9BA7D25-F239-4320-A0DC-85E8001FD669}.Release|x64.ActiveCfg = Release|x64
+		{A9BA7D25-F239-4320-A0DC-85E8001FD669}.Release|x64.Build.0 = Release|x64
+		{A9BA7D25-F239-4320-A0DC-85E8001FD669}.Release|x86.ActiveCfg = Release|x64
+		{A9BA7D25-F239-4320-A0DC-85E8001FD669}.Release|x86.Build.0 = Release|x64
+		{A9BA7D25-F239-4320-A0DC-85E8001FD669}.Season 2 Debug|x64.ActiveCfg = Debug|x64
+		{A9BA7D25-F239-4320-A0DC-85E8001FD669}.Season 2 Debug|x64.Build.0 = Debug|x64
+		{A9BA7D25-F239-4320-A0DC-85E8001FD669}.Season 2 Debug|x86.ActiveCfg = Debug|x64
+		{A9BA7D25-F239-4320-A0DC-85E8001FD669}.Season 2 Debug|x86.Build.0 = Debug|x64
+		{A9BA7D25-F239-4320-A0DC-85E8001FD669}.Season 2 Release|x64.ActiveCfg = Release|x64
+		{A9BA7D25-F239-4320-A0DC-85E8001FD669}.Season 2 Release|x64.Build.0 = Release|x64
+		{A9BA7D25-F239-4320-A0DC-85E8001FD669}.Season 2 Release|x86.ActiveCfg = Release|x64
+		{A9BA7D25-F239-4320-A0DC-85E8001FD669}.Season 2 Release|x86.Build.0 = Release|x64
+		{A9BA7D25-F239-4320-A0DC-85E8001FD669}.Season 3 Debug|x64.ActiveCfg = Debug|x64
+		{A9BA7D25-F239-4320-A0DC-85E8001FD669}.Season 3 Debug|x64.Build.0 = Debug|x64
+		{A9BA7D25-F239-4320-A0DC-85E8001FD669}.Season 3 Debug|x86.ActiveCfg = Debug|x64
+		{A9BA7D25-F239-4320-A0DC-85E8001FD669}.Season 3 Debug|x86.Build.0 = Debug|x64
+		{A9BA7D25-F239-4320-A0DC-85E8001FD669}.Season 3 Release|x64.ActiveCfg = Release|x64
+		{A9BA7D25-F239-4320-A0DC-85E8001FD669}.Season 3 Release|x64.Build.0 = Release|x64
+		{A9BA7D25-F239-4320-A0DC-85E8001FD669}.Season 3 Release|x86.ActiveCfg = Release|x64
+		{A9BA7D25-F239-4320-A0DC-85E8001FD669}.Season 3 Release|x86.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -219,6 +245,7 @@ Global
 		{14DAE1A4-6F3F-43C0-AC17-9DCDE420AF34} = {168B6247-2D33-4942-AB3F-C5041B3BDFEA}
 		{71E3E262-49C5-4B6C-9670-D0741CEDB63B} = {76364BAA-BC9D-4A92-AA2A-8914FAE22834}
 		{04B1D963-2BCB-4887-9D6D-04CB3366A348} = {31D3D5D2-B011-4F9B-B6CC-D0A35675D797}
+		{A9BA7D25-F239-4320-A0DC-85E8001FD669} = {31D3D5D2-B011-4F9B-B6CC-D0A35675D797}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {12888C62-D3A2-4DD7-A9A5-1481D95865D0}
