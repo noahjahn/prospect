@@ -55,7 +55,7 @@ public class ActivateContract : ICloudScriptFunction<FYActivateContractRequest, 
             throw new CloudScriptException("CloudScript was not called within a http request");
         }
         var userId = context.User.FindAuthUserId();
-        var userData = await _userDataService.FindAsync(userId, userId, new List<string>{"ContractsActive"});
+        var userData = await _userDataService.FindAsync(userId, userId, new List<string>{"ContractsActive", "ContractsOneTimeCompleted"});
         var titleData = _titleDataService.Find(new List<string>{"Contracts"});
 
         var contracts = JsonSerializer.Deserialize<Dictionary<string, TitleDataContractInfo>>(titleData["Contracts"]);
@@ -65,6 +65,15 @@ public class ActivateContract : ICloudScriptFunction<FYActivateContractRequest, 
                 UserID = userId,
                 Error = "Contract not found",
                 Status = 3 // EYActivateContractRequestStatus::FAILED_GETTING_STATIC_DATA
+            };
+        }
+        var contractsCompleted = JsonSerializer.Deserialize<FYGetCompletedContractsResult>(userData["ContractsOneTimeCompleted"].Value);
+        if (contractsCompleted.ContractsIDs.Contains(request.ContractID)) {
+            return new FYActivateContractResult
+            {
+                UserID = userId,
+                Error = "Contract is already completed",
+                Status = 1 // EYActivateContractRequestStatus::CONTRACT_OF_THIS_FACTION_IS_ALREADY_ACTIVE
             };
         }
         // TODO: Contract unlock criteria
