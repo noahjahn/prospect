@@ -1,16 +1,26 @@
-﻿using Prospect.Server.Api.Services.CloudScript.Models;
+﻿using Microsoft.Extensions.Options;
+using Prospect.Server.Api.Config;
+using Prospect.Server.Api.Services.CloudScript.Models;
 
 namespace Prospect.Server.Api.Services.CloudScript.Functions;
 
 [CloudScriptFunction("GetSignalRConnection")]
 public class GetSignalRConnection : ICloudScriptFunction<FYGetSignalRConnection, FYGetSignalRConnectionResult>
 {
+    private readonly PlayFabSettings _settings;
+
+    public GetSignalRConnection(IOptions<PlayFabSettings> settings)
+    {
+        _settings = settings.Value;
+    }
+
     public Task<FYGetSignalRConnectionResult> ExecuteAsync(FYGetSignalRConnection request)
     {
+        // The game client connects to SignalR only over HTTPS
         return Task.FromResult(new FYGetSignalRConnectionResult
         {
-            Url = "https://2ea46.playfabapi.com/signalr/?hub=pubsub",
-            AccessToken = "TEST"
+            Url = _settings.SignalRURL,
+            AccessToken = _settings.SignalRAccessToken
         });
     }
 }
