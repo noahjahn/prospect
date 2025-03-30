@@ -248,10 +248,10 @@ public class ClaimActiveContract : ICloudScriptFunction<FYClaimCompletedActiveCo
             }
             var contractToUnlock = contracts[contractIdToUnlock];
             var progress = new int[contractToUnlock.Objectives.Length];
-            // TODO: Automatically set max progress of kill and visit objectives. To remove once kill and visit objectives are reported by the client.
+            // NOTE: Automatically set max progress for player kill objectives.
             for (var i = 0; i < contractToUnlock.Objectives.Length; i++) {
                 var objective = contractToUnlock.Objectives[i];
-                if (objective.Type != EYContractObjectiveType.OwnNumOfItem) {
+                if (objective.Type == EYContractObjectiveType.Kills && objective.KillConditions.KillTarget == EYKillTypeAction.Players) {
                     progress[i] = objective.MaxProgress;
                 }
             }
