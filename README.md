@@ -141,7 +141,7 @@ to successfully communicate with the local server. Do the following:
 
     1. Select **Place all certificates in the following store** > **Browse...**. Choose **Trusted Root Certification Authorities** and click **OK**. Click **Next**.
 
-    1. Click **Finish**. A **Security Warning** popup may appear, make sure it specifies `2EA46.playfabapi.com` certification authority and click **Yes**.
+    1. Click **Finish**. A **Security Warning** popup may appear, make sure it specifies `127.0.0.1` certification authority and click **Yes**.
 
 ### 4. Extract `LoaderPack` to the game
 
@@ -174,7 +174,7 @@ If you've installed the certificate for the **Current User**:
 
 1. Expand **Trusted Root Certification Authorities** and select **Certificates**.
 
-1. Find `2EA46.playfabapi.com`, right-click it > **Delete**.
+1. Find `127.0.0.1`, right-click it > **Delete**.
 
 If you've installed the certificate for the **Local Machine**, repeat the same steps but instead open `certlm.msc`.
 
