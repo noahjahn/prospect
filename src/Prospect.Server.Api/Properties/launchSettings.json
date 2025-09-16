@@ -1,21 +1,21 @@
 {
   "profiles": {
     "Prospect.Server.Api": {
-        "commandName": "Project",
-        "environmentVariables": {
-            "ASPNETCORE_ENVIRONMENT": "Development",
-            "ASPNETCORE_Kestrel__Certificates__Default__Path": ".\\certificate.pfx"
-        },
-        "dotnetRunMessages": true,
-        "applicationUrl": "https://127.0.0.1:8443;http://127.0.0.1:8000",
-        "useSSL": true
+      "commandName": "Project",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "ASPNETCORE_Kestrel__Certificates__Default__Path": ".\\certificate.pfx"
+      },
+      "dotnetRunMessages": true,
+      "applicationUrl": "https://0.0.0.0:8443;http://0.0.0.0:8000",
+      "useSSL": true
     },
     "IIS Express": {
       "commandName": "IISExpress",
       "launchBrowser": true,
-        "environmentVariables": {
-            "ASPNETCORE_ENVIRONMENT": "Development"
-        }
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
     }
   },
   "iisSettings": {

@@ -38,7 +38,7 @@ public class MultiplayerController : Controller
                     new FQosServer
                     {
                         Region = "NorthEurope",
-                        ServerUrl = "127.0.0.1"
+                        ServerUrl = "0.0.0.0"
                     }
                 }
             }

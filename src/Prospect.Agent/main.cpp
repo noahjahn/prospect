@@ -55,7 +55,7 @@ SDK::FString __fastcall PlayFabApiGetUrlProxy(SDK::UPlayFabAPISettings* thiz, co
         return g_backendUrl + std::wstring(callPath.c_str());
     }
 
-    return std::wstring(L"https://127.0.0.1:8443") + std::wstring(callPath.c_str());
+    return std::wstring(L"https://0.0.0.0:8443") + std::wstring(callPath.c_str());
 }
 
 DWORD WINAPI OnDllAttach(LPVOID base) {
