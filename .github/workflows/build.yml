@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
 
 env:
-  PROJ_ROOT: ./src/src/Prospect.sln
+  PROJ_ROOT: ./src/Prospect.sln
   PROJ_CLIENT: ./src/Prospect.Client.Loader/Prospect.Client.Loader.vcxproj
 
 jobs:
